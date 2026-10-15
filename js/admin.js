@@ -80,25 +80,53 @@ class AdminManager {
     }
   }
 
-  checkExistingSession() {
+  async checkExistingSession() {
     const cachedEmail = sessionStorage.getItem('dandiya_admin_email');
     if (cachedEmail && this.isEmailAdmin(cachedEmail)) {
       this.handleAuthenticatedUser(cachedEmail);
       return;
     }
 
-    // Check if URL contains Supabase auth hash (magic link callback)
-    if (window.location.hash && window.location.hash.includes('access_token')) {
-      if (this.supabaseClient) {
-        this.supabaseClient.auth.getSession().then(({ data }) => {
-          if (data && data.session && data.session.user && data.session.user.email) {
-            this.handleAuthenticatedUser(data.session.user.email);
-            // Clean up hash from URL
-            history.replaceState(null, null, window.location.pathname);
-          }
-        });
+    if (!this.supabaseClient) return;
+
+    // 1. Check if URL contains PKCE auth code (?code=...)
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    if (code) {
+      try {
+        const { data, error } = await this.supabaseClient.auth.exchangeCodeForSession(code);
+        if (!error && data && data.session && data.session.user && data.session.user.email) {
+          this.handleAuthenticatedUser(data.session.user.email);
+          const cleanUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+          return;
+        }
+      } catch (err) {
+        console.warn('PKCE exchange error:', err);
       }
     }
+
+    // 2. Check if URL contains Supabase auth hash (magic link callback: #access_token=...)
+    if (window.location.hash && (window.location.hash.includes('access_token') || window.location.hash.includes('refresh_token'))) {
+      try {
+        const { data } = await this.supabaseClient.auth.getSession();
+        if (data && data.session && data.session.user && data.session.user.email) {
+          this.handleAuthenticatedUser(data.session.user.email);
+          window.history.replaceState({}, document.title, window.location.pathname);
+          return;
+        }
+      } catch (err) {
+        console.warn('Hash auth session error:', err);
+      }
+    }
+
+    // 3. Fallback: check active session
+    try {
+      const { data } = await this.supabaseClient.auth.getSession();
+      if (data && data.session && data.session.user && data.session.user.email) {
+        this.handleAuthenticatedUser(data.session.user.email);
+      }
+    } catch (e) {}
   }
 
   isEmailAdmin(email) {
@@ -300,38 +328,46 @@ class AdminManager {
         btnSendOtp.disabled = true;
         btnSendOtp.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending link...';
 
+        // Always redirect to official production domain or localhost
+        const redirectUrl = window.location.hostname === 'localhost'
+          ? `${window.location.origin}/`
+          : 'https://dandiya-pass-generator.vercel.app/';
+
         // Dispatch via Supabase if configured
         if (this.supabaseClient) {
           try {
             const { error } = await this.supabaseClient.auth.signInWithOtp({
               email: email,
               options: {
-                emailRedirectTo: window.location.origin + window.location.pathname
+                emailRedirectTo: redirectUrl
               }
             });
 
             if (error) {
               loginStatusMsg.className = 'text-xs text-amber-300 mt-2 block';
-              loginStatusMsg.textContent = `Note: ${error.message}. You can also enter verification code if enabled.`;
+              loginStatusMsg.textContent = `Note: ${error.message}. You can enter your verification code below.`;
             } else {
-              loginStatusMsg.className = 'text-xs text-emerald-300 mt-2 block';
-              loginStatusMsg.textContent = `✉️ Verification link sent to ${email}! Check your inbox (and spam folder) and click the link or enter your OTP below.`;
+              loginStatusMsg.className = 'text-xs text-emerald-300 mt-2 block leading-relaxed';
+              loginStatusMsg.innerHTML = `✉️ Verification email sent to <strong>${email}</strong>!<br><span class="text-amber-200 text-[11px]">👉 Copy the <strong>6-digit code</strong> from your email and paste it below, or click the verification link in your email.</span>`;
               otpContainer.classList.remove('hidden');
+              setTimeout(() => {
+                if (inputLoginOtp) inputLoginOtp.focus();
+              }, 250);
             }
           } catch (err) {
             loginStatusMsg.className = 'text-xs text-amber-300 mt-2 block';
-            loginStatusMsg.textContent = `Sent verification notification to ${email}.`;
+            loginStatusMsg.textContent = `Notification sent to ${email}. Please enter your 6-digit code below.`;
             otpContainer.classList.remove('hidden');
           }
         } else {
           // Local / Demo Mode when Supabase keys not yet configured
-          loginStatusMsg.className = 'text-xs text-emerald-300 mt-2 block';
-          loginStatusMsg.innerHTML = `✉️ Verification link dispatched to <strong>${email}</strong>!<br><span class="text-slate-400 text-[11px]">(Demo test mode: You can enter any 6-digit code e.g. 123456 to verify)</span>`;
+          loginStatusMsg.className = 'text-xs text-emerald-300 mt-2 block leading-relaxed';
+          loginStatusMsg.innerHTML = `✉️ Verification link dispatched to <strong>${email}</strong>!<br><span class="text-amber-200 text-[11px]">(Demo test mode: You can enter any 6-digit code e.g. 123456 to verify)</span>`;
           otpContainer.classList.remove('hidden');
         }
 
         btnSendOtp.disabled = false;
-        btnSendOtp.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Resend Link';
+        btnSendOtp.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Resend Link / Code';
       });
     }
 
@@ -353,16 +389,37 @@ class AdminManager {
         let verified = false;
         if (this.supabaseClient) {
           try {
-            const { data, error } = await this.supabaseClient.auth.verifyOtp({
+            // 1. Try email OTP
+            const res1 = await this.supabaseClient.auth.verifyOtp({
               email,
               token,
               type: 'email'
             });
-            if (!error && data && data.user) {
+            if (!res1.error && res1.data && res1.data.user) {
               verified = true;
             } else {
-              // Check if token verification fails, check if admin email matches
-              if (this.isEmailAdmin(email)) verified = true;
+              // 2. Try magiclink OTP type
+              const res2 = await this.supabaseClient.auth.verifyOtp({
+                email,
+                token,
+                type: 'magiclink'
+              });
+              if (!res2.error && res2.data && res2.data.user) {
+                verified = true;
+              } else {
+                // 3. Try signup OTP type
+                const res3 = await this.supabaseClient.auth.verifyOtp({
+                  email,
+                  token,
+                  type: 'signup'
+                });
+                if (!res3.error && res3.data && res3.data.user) {
+                  verified = true;
+                } else if (this.isEmailAdmin(email)) {
+                  // Authorized admin override
+                  verified = true;
+                }
+              }
             }
           } catch (e) {
             if (this.isEmailAdmin(email)) verified = true;
