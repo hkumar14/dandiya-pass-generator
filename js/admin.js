@@ -345,41 +345,57 @@ class AdminManager {
 
             if (error) {
               loginStatusMsg.className = 'text-xs text-amber-300 mt-2 block';
-              loginStatusMsg.textContent = `Note: ${error.message}. You can enter your verification code below.`;
+              loginStatusMsg.textContent = `Note: ${error.message}. You can also sign in instantly using the passcode above.`;
             } else {
               loginStatusMsg.className = 'text-xs text-emerald-300 mt-2 block leading-relaxed';
-              loginStatusMsg.innerHTML = `✉️ Verification email sent to <strong>${email}</strong>!<br><span class="text-amber-200 text-[11px]">👉 Copy the <strong>6-digit code</strong> from your email and paste it below, or click the verification link in your email.</span>`;
-              otpContainer.classList.remove('hidden');
-              setTimeout(() => {
-                if (inputLoginOtp) inputLoginOtp.focus();
-              }, 250);
+              loginStatusMsg.innerHTML = `✉️ Login link sent to <strong>${email}</strong>!<br><span class="text-amber-200 text-[11px]">👉 Click the link in your email to sign in, or enter passcode <strong>dandiya2026</strong> above for instant entry.</span>`;
             }
           } catch (err) {
             loginStatusMsg.className = 'text-xs text-amber-300 mt-2 block';
-            loginStatusMsg.textContent = `Notification sent to ${email}. Please enter your 6-digit code below.`;
-            otpContainer.classList.remove('hidden');
+            loginStatusMsg.textContent = `Login notification sent to ${email}. You can also sign in with passcode above.`;
           }
         } else {
           // Local / Demo Mode when Supabase keys not yet configured
           loginStatusMsg.className = 'text-xs text-emerald-300 mt-2 block leading-relaxed';
-          loginStatusMsg.innerHTML = `✉️ Verification link dispatched to <strong>${email}</strong>!<br><span class="text-amber-200 text-[11px]">(Demo test mode: You can enter any 6-digit code e.g. 123456 to verify)</span>`;
-          otpContainer.classList.remove('hidden');
+          loginStatusMsg.innerHTML = `✉️ Login link sent to <strong>${email}</strong>!<br><span class="text-amber-200 text-[11px]">👉 Click the link, or enter passcode <strong>dandiya2026</strong> above for instant entry.</span>`;
         }
 
         btnSendOtp.disabled = false;
-        btnSendOtp.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Resend Link / Code';
+        btnSendOtp.innerHTML = '<i class="fa-regular fa-paper-plane"></i> Send Login Link to Email';
       });
     }
 
-    // Verify OTP / Code
+    // Verify Passcode / OTP
     if (btnVerifyOtp) {
       btnVerifyOtp.addEventListener('click', async () => {
         const email = inputLoginEmail.value.trim().toLowerCase();
         const token = inputLoginOtp.value.trim();
 
+        if (!email || !email.includes('@')) {
+          loginStatusMsg.className = 'text-xs text-red-400 mt-2 block';
+          loginStatusMsg.textContent = 'Please enter your Admin Email Address above.';
+          return;
+        }
+
         if (!token) {
           loginStatusMsg.className = 'text-xs text-red-400 mt-2 block';
-          loginStatusMsg.textContent = 'Please enter the verification code.';
+          loginStatusMsg.textContent = 'Please enter the organizer passcode (e.g. dandiya2026).';
+          return;
+        }
+
+        // Verify that this email is an authorized admin
+        if (!this.isEmailAdmin(email)) {
+          loginStatusMsg.className = 'text-xs text-amber-300 mt-2 block';
+          loginStatusMsg.textContent = `⚠️ '${email}' is not in the authorized admin list. Only registered event administrators can access.`;
+          return;
+        }
+
+        // 1. Instant check against organizer master passcodes
+        const MASTER_PASSCODES = ['dandiya2026', 'navratri2026', 'admin2026', 'dandiya@2026'];
+        if (MASTER_PASSCODES.includes(token.toLowerCase())) {
+          loginModal.classList.add('hidden');
+          this.handleAuthenticatedUser(email);
+          this.showToast('🎉 Welcome back, Organizer!');
           return;
         }
 
@@ -389,7 +405,7 @@ class AdminManager {
         let verified = false;
         if (this.supabaseClient) {
           try {
-            // 1. Try email OTP
+            // Try email OTP
             const res1 = await this.supabaseClient.auth.verifyOtp({
               email,
               token,
@@ -398,7 +414,7 @@ class AdminManager {
             if (!res1.error && res1.data && res1.data.user) {
               verified = true;
             } else {
-              // 2. Try magiclink OTP type
+              // Try magiclink OTP type
               const res2 = await this.supabaseClient.auth.verifyOtp({
                 email,
                 token,
@@ -407,7 +423,7 @@ class AdminManager {
               if (!res2.error && res2.data && res2.data.user) {
                 verified = true;
               } else {
-                // 3. Try signup OTP type
+                // Try signup OTP type
                 const res3 = await this.supabaseClient.auth.verifyOtp({
                   email,
                   token,
@@ -430,7 +446,7 @@ class AdminManager {
         }
 
         btnVerifyOtp.disabled = false;
-        btnVerifyOtp.innerHTML = '<i class="fa-solid fa-check"></i> Verify & Login';
+        btnVerifyOtp.innerHTML = '<i class="fa-solid fa-key"></i> Sign In with Passcode';
 
         if (verified) {
           loginModal.classList.add('hidden');
@@ -438,7 +454,7 @@ class AdminManager {
           this.showToast('🎉 Welcome back, Organizer!');
         } else {
           loginStatusMsg.className = 'text-xs text-red-400 mt-2 block';
-          loginStatusMsg.textContent = 'Invalid verification code. Please check your email.';
+          loginStatusMsg.textContent = 'Invalid passcode. Please use passcode "dandiya2026" or click the email link.';
         }
       });
     }
