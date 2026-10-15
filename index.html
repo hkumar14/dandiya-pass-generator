@@ -35,7 +35,46 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <!-- Custom Styles -->
+  <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* Robust responsive container & glass input fallbacks */
+    .app-viewport {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      box-sizing: border-box;
+    }
+    .view-section {
+      width: 100%;
+      max-width: 440px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    @media (min-width: 640px) {
+      .view-section { max-width: 500px; }
+    }
+    @media (min-width: 1024px) {
+      .view-section { max-width: 540px; }
+    }
+    .glass-input {
+      background-color: #0E0C22 !important;
+      color: #FFF9E6 !important;
+      border: 1px solid rgba(242, 194, 73, 0.35) !important;
+    }
+    .glass-input:focus {
+      background-color: #151234 !important;
+      border-color: #F5D061 !important;
+      box-shadow: 0 0 16px rgba(245, 208, 97, 0.4) !important;
+    }
+    .festive-bg-image {
+      background-image: url('assets/dandiya-bg-couple.jpg'), url('/assets/dandiya-bg-couple.jpg'), url('../assets/dandiya-bg-couple.jpg');
+    }
+  </style>
 </head>
 <body class="bg-[#070913] text-white">
 
@@ -51,10 +90,10 @@
   <canvas id="particle-canvas"></canvas>
 
   <!-- Main Viewport -->
-  <div class="app-viewport">
+  <div class="app-viewport w-full min-h-screen flex flex-col items-center justify-start px-3 sm:px-6 py-3 sm:py-6 overflow-x-hidden">
     
     <!-- Top Action Bar (Guest & Admin Modes) -->
-    <header class="w-full max-w-[440px] py-2 px-1 mb-2 z-20">
+    <header class="w-full max-w-md sm:max-w-lg md:max-w-xl mx-auto py-2 px-1 mb-3 z-20">
       
       <!-- 1. Guest Header (Default for public users) -->
       <div id="guest-header-controls" class="flex items-center justify-between w-full">
@@ -116,7 +155,7 @@
     <!-- =======================================================================
          VIEW 1: REGISTRATION FORM (MOBILE-FIRST)
          ======================================================================= -->
-    <main id="view-registration" class="view-section view-active">
+    <main id="view-registration" class="view-section view-active w-full max-w-md sm:max-w-lg md:max-w-xl mx-auto">
       
       <!-- Festive Header Banner -->
       <div class="text-center mb-4 flex flex-col items-center">
@@ -162,7 +201,7 @@
       </div>
 
       <!-- Registration Glass Card -->
-      <div class="glass-panel p-5 sm:p-6 mb-4">
+      <div class="glass-panel p-5 sm:p-7 mb-4">
         <div class="flex items-center justify-between pb-3 mb-4 border-b border-amber-400/20">
           <div>
             <h2 class="font-serif-royal text-lg font-bold text-amber-100 flex items-center gap-2">
@@ -192,7 +231,7 @@
                 name="full_name"
                 required
                 placeholder="e.g. Rocky Sharma"
-                class="glass-input w-full pl-10 pr-3.5 py-3 rounded-xl text-sm font-medium placeholder-amber-200/30 focus:ring-1 focus:ring-amber-400"
+                class="glass-input w-full pl-10 pr-3.5 py-3 rounded-xl text-sm font-medium bg-[#0E0C22] text-amber-100 border border-amber-400/35 placeholder-amber-200/40 focus:ring-2 focus:ring-amber-400 focus:bg-[#151234] focus:outline-none transition-all"
                 autocomplete="name"
               >
             </div>
@@ -270,7 +309,7 @@
                 required
                 maxlength="14"
                 placeholder="e.g. 9876543210"
-                class="glass-input w-full pl-10 pr-3.5 py-3 rounded-xl text-sm font-medium placeholder-amber-200/30 focus:ring-1 focus:ring-amber-400"
+                class="glass-input w-full pl-10 pr-3.5 py-3 rounded-xl text-sm font-medium bg-[#0E0C22] text-amber-100 border border-amber-400/35 placeholder-amber-200/40 focus:ring-2 focus:ring-amber-400 focus:bg-[#151234] focus:outline-none transition-all"
                 autocomplete="tel"
               >
             </div>
@@ -291,7 +330,7 @@
                 name="email"
                 required
                 placeholder="e.g. student@college.edu"
-                class="glass-input w-full pl-10 pr-3.5 py-3 rounded-xl text-sm font-medium placeholder-amber-200/30 focus:ring-1 focus:ring-amber-400"
+                class="glass-input w-full pl-10 pr-3.5 py-3 rounded-xl text-sm font-medium bg-[#0E0C22] text-amber-100 border border-amber-400/35 placeholder-amber-200/40 focus:ring-2 focus:ring-amber-400 focus:bg-[#151234] focus:outline-none transition-all"
                 autocomplete="email"
               >
             </div>
@@ -359,7 +398,7 @@
     <!-- =======================================================================
          VIEW 3: DIGITAL ENTRY PASS (EXACT TEMPLATE MATCH FROM USER SPEC)
          ======================================================================= -->
-    <section id="view-pass" class="view-section view-hidden">
+    <section id="view-pass" class="view-section view-hidden w-full max-w-md sm:max-w-lg md:max-w-xl mx-auto">
       
       <!-- Top banner reminder -->
       <div class="text-center mb-3">
@@ -578,7 +617,7 @@
     <!-- =======================================================================
          FESTIVE FOOTER WITH MANDALA & LOTUS ORNAMENTATION
          ======================================================================= -->
-    <footer class="w-full relative mt-8 mb-6 z-10 select-none overflow-hidden text-center max-w-[440px]">
+    <footer class="w-full max-w-md sm:max-w-lg md:max-w-xl mx-auto relative mt-8 mb-6 z-10 select-none overflow-hidden text-center">
       
       <!-- Footer Mandala Border Image -->
       <div class="relative w-full overflow-hidden rounded-t-2xl border-t border-x border-amber-400/30 bg-[#06081B]/80 backdrop-blur-md shadow-2xl">
