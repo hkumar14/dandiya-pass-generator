@@ -6,7 +6,6 @@ A mobile-first, Vercel-ready web application for **"Dandiya Night 2026"** studen
 
 ## 🚀 Live Local Links
 - **Public Student Registration & Pass Generator:** [http://localhost:8080](http://localhost:8080)
-- **Supabase & Environment Setup Page:** [http://localhost:8080/setup.html](http://localhost:8080/setup.html)
 
 ---
 
@@ -102,7 +101,6 @@ ON dandiya_admins FOR INSERT WITH CHECK (true);
 
 ## 📁 Project Architecture
 * `vercel.json` - Vercel deployment configuration.
-* `setup.html` - Interactive Supabase credentials and `.env` setup page with live test.
 * `.env.example` - Environment variable template for Vercel.
 * `api/register.js` - Serverless handler for student registration.
 * `api/registrations.js` - Serverless handler for retrieving registrations.
