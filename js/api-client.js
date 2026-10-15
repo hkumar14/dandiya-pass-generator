@@ -12,8 +12,8 @@ class ApiService {
 
   // Save a student registration (Posts to backend & saves local backup)
   async saveRegistration(record) {
-    const currentOrigin = window.location.origin + window.location.pathname;
-    const passLink = `${currentOrigin}?pass_id=${record.pass_id}`;
+    const baseUrl = window.location.origin;
+    const passLink = `${baseUrl}/pass.html?pass_id=${encodeURIComponent(record.pass_id)}`;
 
     const payload = {
       pass_id: record.pass_id,

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Digital Entry Pass - Dandiya Night 2026</title>
+
+  <!-- Meta & Theme Color for Mobile -->
+  <meta name="theme-color" content="#090B1E">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Official Dandiya Night 2026 Digital Entry Pass">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- FontAwesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Marcellus&family=Outfit:wght@300;400;500;600;700&family=Rozha+One&display=swap" rel="stylesheet">
+
+  <!-- External CDNs -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Stylesheet Links -->
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <style>
+    /* Inlined Core Styles for 100% Reliable Rendering */
+    :root {
+      --color-royal-blue: #090B1E;
+      --color-gold: #F2C249;
+      --color-crimson: #6B0E1B;
+      --font-festive-title: 'Cinzel Decorative', 'Cinzel', serif;
+      --font-pass-title: 'Rozha One', 'Marcellus', serif;
+      --font-serif: 'Cinzel', serif;
+      --font-body: 'Outfit', sans-serif;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0; padding: 0;
+      background-color: #070913;
+      color: #FFFFFF;
+      font-family: var(--font-body);
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+    .festive-bg-wrapper {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      z-index: 0; pointer-events: none; overflow: hidden;
+    }
+    .festive-bg-image {
+      position: absolute; inset: -4%; width: 108%; height: 108%;
+      background-image: url('/assets/dandiya-bg-couple.jpg'), url('assets/dandiya-bg-couple.jpg');
+      background-size: cover; background-position: center top; background-repeat: no-repeat;
+      filter: brightness(0.72) saturate(1.25);
+      animation: bgBreathing 24s ease-in-out infinite alternate;
+    }
+    @media (min-width: 768px) {
+      .festive-bg-image { background-position: center 22%; }
+    }
+    @keyframes bgBreathing {
+      0% { transform: scale(1) translate(0, 0); filter: brightness(0.68) saturate(1.2); }
+      50% { transform: scale(1.04) translate(-0.8%, -0.5%); filter: brightness(0.78) saturate(1.35); }
+      100% { transform: scale(1.02) translate(0.6%, 0.4%); filter: brightness(0.72) saturate(1.25); }
+    }
+    .festive-bg-overlay {
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 32%, rgba(9, 11, 30, 0.42) 0%, rgba(15, 18, 48, 0.72) 55%, rgba(5, 7, 18, 0.92) 100%);
+      mix-blend-mode: multiply;
+    }
+    .lantern-light-haze {
+      position: absolute; top: 0; left: 0; right: 0; height: 220px;
+      background: radial-gradient(ellipse 85% 65% at 50% 0%, rgba(255, 190, 11, 0.32) 0%, rgba(251, 86, 7, 0.15) 50%, transparent 100%);
+      pointer-events: none; animation: lanternFlicker 4s ease-in-out infinite alternate;
+      mix-blend-mode: screen;
+    }
+    @keyframes lanternFlicker {
+      0% { opacity: 0.55; transform: scaleY(0.96); }
+      50% { opacity: 0.90; transform: scaleY(1.04); }
+      100% { opacity: 0.70; transform: scaleY(1); }
+    }
+    #particle-canvas {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      z-index: 1; pointer-events: none;
+    }
+    .app-viewport {
+      position: relative; z-index: 10;
+      min-height: 100vh; min-height: 100dvh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start;
+      padding: 16px 14px 40px 14px;
+      width: 100%; box-sizing: border-box;
+    }
+    .font-festive { font-family: var(--font-festive-title); }
+    .font-serif-royal { font-family: var(--font-serif); }
+    .font-pass { font-family: var(--font-pass-title); }
+    .text-gold-gradient {
+      background: linear-gradient(135deg, #FFF6D6 0%, #F5D061 25%, #E5A93C 50%, #FFDF73 75%, #B37D14 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 8px rgba(245, 208, 97, 0.45));
+    }
+    .mobile-action-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 18px; border-radius: 16px; font-size: 13.5px;
+      font-weight: 700; letter-spacing: 0.04em; transition: all 0.2s ease;
+      cursor: pointer; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    }
+    .mobile-action-btn:active { transform: scale(0.97); }
+    .footer-mandala-banner {
+      filter: drop-shadow(0 0 14px rgba(242, 194, 73, 0.3));
+      animation: footerMandalaAura 5s ease-in-out infinite alternate;
+    }
+    @keyframes footerMandalaAura {
+      0% { filter: drop-shadow(0 0 8px rgba(242, 194, 73, 0.25)); }
+      100% { filter: drop-shadow(0 0 24px rgba(255, 183, 3, 0.55)) brightness(1.08); }
+    }
+    .footer-lotus-glow {
+      position: absolute; bottom: 6%; left: 50%; transform: translateX(-50%);
+      width: 140px; height: 85px;
+      background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.52) 0%, rgba(255, 120, 0, 0.28) 45%, transparent 75%);
+      filter: blur(16px); pointer-events: none;
+      animation: lotusBreathing 3.5s ease-in-out infinite alternate;
+      mix-blend-mode: screen;
+    }
+    @keyframes lotusBreathing {
+      0% { opacity: 0.45; transform: translateX(-50%) scale(0.92); }
+      50% { opacity: 0.95; transform: translateX(-50%) scale(1.18); }
+      100% { opacity: 0.55; transform: translateX(-50%) scale(1); }
+    }
+  </style>
+</head>
+<body class="bg-[#070913] text-white">
+
+  <!-- Ambient Festive Background Layer -->
+  <div class="festive-bg-wrapper">
+    <div class="festive-bg-image"></div>
+    <div class="festive-bg-overlay"></div>
+    <div class="lantern-light-haze"></div>
+  </div>
+
+  <!-- Background Particle System -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Main Viewport -->
+  <div class="app-viewport w-full min-h-screen flex flex-col items-center justify-start px-3 sm:px-6 py-3 sm:py-6 overflow-x-hidden">
+    
+    <!-- Top Action Bar -->
+    <header class="w-full max-w-md sm:max-w-lg md:max-w-xl mx-auto py-2 px-1 mb-3 z-20 flex items-center justify-between">
+      <a
+        href="index.html"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/80 border border-amber-400/30 text-amber-300 text-xs font-bold hover:bg-slate-800 transition-all shadow-md"
+      >
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Register Another</span>
+      </a>
+
+      <div class="flex items-center gap-2">
+        <button id="btn-audio-toggle" type="button" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-900/70 border border-amber-400/30 flex items-center justify-center text-xs sm:text-sm shadow-md active:scale-95 transition-transform" title="Toggle Festive Sound">
+          <i class="fa-solid fa-music text-amber-400"></i>
+        </button>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[11px] font-semibold">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Pass Active</span>
+        </span>
+      </div>
+    </header>
+
+    <!-- =======================================================================
+         PASS VIEW: DIGITAL ENTRY PASS (MATCHING USER SPECIFICATION TEMPLATE)
+         ======================================================================= -->
+    <main class="w-full max-w-md sm:max-w-lg md:max-w-xl mx-auto z-10">
+      
+      <!-- Top banner reminder -->
+      <div class="text-center mb-3">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-red-950/70 via-amber-950/70 to-red-950/70 border border-amber-400/40 text-amber-200 text-xs font-semibold">
+          <i class="fa-solid fa-shield-halved text-amber-400"></i>
+          <span>Official Event Entry Pass • Gate Scanner Ready</span>
+        </span>
+      </div>
+
+      <!-- The Physical-Style Pass Card -->
+      <div class="pass-perspective-wrapper">
+        <div id="digital-pass-card" class="pass-ticket-card">
+          
+          <!-- Subtle lighting gloss reflection -->
+          <div class="ticket-shine"></div>
+
+          <!-- 1. Dark Maroon Header -->
+          <div class="pass-top-header">
+            <span class="pass-header-badge">DIGITAL ENTRY PASS</span>
+          </div>
+
+          <!-- 2. Golden Ribbon Banner -->
+          <div class="pass-gold-ribbon">
+            <div class="pass-ribbon-title">DANDIYA NIGHT</div>
+            <div class="pass-ribbon-subtitle">DANCE • CELEBRATE • TOGETHER</div>
+          </div>
+
+          <!-- 3. Student Details (Name, Course, Pass ID) -->
+          <div class="pass-user-info-grid">
+            
+            <!-- Full Name Pill -->
+            <div class="pass-info-pill">
+              <div class="pass-pill-icon"><i class="fa-solid fa-user"></i></div>
+              <div class="pass-pill-content">
+                <span class="pass-pill-label">NAME</span>
+                <span id="pass-display-name" class="pass-pill-value">STUDENT NAME</span>
+              </div>
+            </div>
+
+            <!-- Year / Course Pill -->
+            <div class="pass-info-pill">
+              <div class="pass-pill-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+              <div class="pass-pill-content">
+                <span class="pass-pill-label">YEAR / COURSE</span>
+                <span id="pass-display-course" class="pass-pill-value">3rd Year / BDS</span>
+              </div>
+            </div>
+
+            <!-- Unique Pass ID Pill -->
+            <div class="pass-info-pill">
+              <div class="pass-pill-icon"><i class="fa-solid fa-ticket"></i></div>
+              <div class="pass-pill-content">
+                <span class="pass-pill-label">PASS ID</span>
+                <span id="pass-display-id" class="pass-pill-value font-mono font-black text-[#5A0813]">DN-XXXXXX</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 4. Clean Perforated Ticket Divider with Gold Star -->
+          <div class="ticket-perforated-divider">
+            <div class="perforated-dashed-line"></div>
+            <div class="ticket-center-star">★</div>
+          </div>
+
+          <!-- 5. QR Code & Instructions Section -->
+          <div class="pass-qr-container">
+            <div class="qr-code-box">
+              <div id="pass-qr-code-element" class="flex items-center justify-center">
+                <!-- QR Code rendered via QRCode.js -->
+              </div>
+            </div>
+            
+            <div class="qr-instructions">
+              <div class="qr-label-bold">SCAN AT ENTRY</div>
+              <div class="qr-label-sub">UNIQUE PASS ID</div>
+              <div class="qr-validity-tag">VALID FOR ONE PERSON ONLY</div>
+            </div>
+          </div>
+
+          <!-- 6. Date, Venue & Important Rules -->
+          <div class="pass-event-strip">
+            
+            <div class="pass-event-col">
+              <div class="pass-event-icon"><i class="fa-regular fa-calendar-check"></i></div>
+              <div class="pass-event-text">
+                <strong>19 OCTOBER</strong>
+                <span>2026</span>
+              </div>
+            </div>
+
+            <div class="pass-event-col">
+              <div class="pass-event-icon"><i class="fa-solid fa-location-dot"></i></div>
+              <div class="pass-event-text">
+                <strong>COLLEGE</strong>
+                <span>Ground</span>
+              </div>
+            </div>
+
+            <div class="pass-event-col">
+              <div class="pass-event-icon"><i class="fa-solid fa-ticket-simple"></i></div>
+              <div class="pass-event-text">
+                <strong>LIMITED</strong>
+                <span>Entry</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 7. Pass Rules Section -->
+          <div class="pass-rules-row">
+            
+            <div class="pass-rule-col">
+              <div class="pass-rule-icon"><i class="fa-solid fa-user-check"></i></div>
+              <div class="pass-rule-text">VALID FOR<br>REGISTERED STUDENT<br>ONLY</div>
+            </div>
+
+            <div class="pass-rule-col">
+              <div class="pass-rule-icon"><i class="fa-solid fa-ban"></i></div>
+              <div class="pass-rule-text">NON-TRANSFERABLE</div>
+            </div>
+
+            <div class="pass-rule-col">
+              <div class="pass-rule-icon"><i class="fa-solid fa-qrcode"></i></div>
+              <div class="pass-rule-text">SHOW THIS PASS AT<br>THE ENTRANCE</div>
+            </div>
+
+          </div>
+
+          <!-- 8. Bottom Dark Midnight Footer Bar -->
+          <div class="pass-bottom-footer">
+            <div class="pass-footer-stars">✦ ✦ ✦ ✦ ✦</div>
+            <div class="pass-footer-rights">
+              NAVRATRI FESTIVAL CELEBRATION • ALL RIGHTS RESERVED
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-5 space-y-2.5">
+        
+        <!-- Primary: Download PDF Pass -->
+        <button
+          type="button"
+          id="btn-download-pdf"
+          class="w-full mobile-action-btn bg-gradient-to-r from-amber-200 via-amber-300 to-amber-400 text-[#3B040B] font-extrabold shadow-lg border border-white/40"
+        >
+          <i class="fa-solid fa-file-pdf text-red-700 text-lg"></i>
+          <span>Download Pass as PDF</span>
+        </button>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <!-- Save as Image -->
+          <button
+            type="button"
+            id="btn-download-img"
+            class="mobile-action-btn bg-slate-900/80 hover:bg-slate-800 text-amber-200 border border-amber-400/40"
+          >
+            <i class="fa-solid fa-image text-amber-400"></i>
+            <span>Save Image</span>
+          </button>
+
+          <!-- Share Pass -->
+          <button
+            type="button"
+            id="btn-share-pass"
+            class="mobile-action-btn bg-slate-900/80 hover:bg-slate-800 text-amber-200 border border-amber-400/40"
+          >
+            <i class="fa-solid fa-share-nodes text-amber-400"></i>
+            <span>Share Pass</span>
+          </button>
+        </div>
+
+        <!-- Back to Registration Link -->
+        <a
+          href="index.html"
+          class="w-full py-2.5 text-xs text-amber-300/80 hover:text-amber-100 flex items-center justify-center gap-1.5 transition-colors text-center"
+        >
+          <i class="fa-solid fa-arrow-rotate-left"></i>
+          <span>Register Another Student</span>
+        </a>
+
+      </div>
+
+    </main>
+
+    <!-- =======================================================================
+         FESTIVE FOOTER WITH MANDALA & LOTUS ORNAMENTATION
+         ======================================================================= -->
+    <footer class="w-full max-w-md sm:max-w-lg md:max-w-xl mx-auto relative mt-8 mb-6 z-10 select-none overflow-hidden text-center">
+      
+      <!-- Footer Mandala Border Image -->
+      <div class="relative w-full overflow-hidden rounded-t-2xl border-t border-x border-amber-400/30 bg-[#06081B]/80 backdrop-blur-md shadow-2xl">
+        <img
+          src="assets/dandiya-footer-mandala.png"
+          alt="Navratri Lotus Mandala Border"
+          class="w-full h-auto object-cover object-bottom block pointer-events-none footer-mandala-banner"
+          onerror="if (!this._tried) { this._tried = true; this.src = '/assets/dandiya-footer-mandala.png'; }"
+        />
+        <!-- Breathing Golden Lotus Glow Overlay -->
+        <div class="footer-lotus-glow"></div>
+      </div>
+
+      <!-- Festive Footer Text Banner -->
+      <div class="bg-[#050819]/95 border-b border-x border-amber-500/30 rounded-b-2xl py-3 px-4 backdrop-blur-md">
+        <div class="flex items-center justify-center gap-2 text-amber-400 text-xs font-bold font-festive tracking-widest uppercase mb-1">
+          <span class="text-amber-500">✦</span>
+          <span>Shubh Navratri 2026 • Dandiya Raas</span>
+          <span class="text-amber-500">✦</span>
+        </div>
+        <p class="text-[10px] text-amber-200/60 max-w-xs mx-auto">
+          College Annual Dandiya Celebration • Non-Transferable Digital Pass System
+        </p>
+      </div>
+
+    </footer>
+
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="/js/audio.js"></script>
+  <script src="/js/particles.js"></script>
+  <script src="/js/pass-engine.js"></script>
+  <script>
+    // Fallback script loading if /js/ is not found
+    if (!window.PassEngine) {
+      document.write('<script src="js/audio.js"><\/script>');
+      document.write('<script src="js/particles.js"><\/script>');
+      document.write('<script src="js/pass-engine.js"><\/script>');
+    }
+  </script>
+
+  <!-- Pass Page Controller -->
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Initialize Particles & Audio
+      if (typeof FestiveParticleEngine !== 'undefined') {
+        new FestiveParticleEngine('particle-canvas');
+      }
+
+      const audioBtn = document.getElementById('btn-audio-toggle');
+      if (audioBtn && window.festiveAudio) {
+        audioBtn.addEventListener('click', () => window.festiveAudio.toggleMute());
+      }
+
+      // 2. Resolve Pass Data
+      const urlParams = new URLSearchParams(window.location.search);
+      const passId = urlParams.get('pass_id') || urlParams.get('id');
+
+      let passData = null;
+
+      // Try sessionStorage
+      try {
+        const stored = sessionStorage.getItem('current_pass');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (!passId || parsed.pass_id === passId) {
+            passData = parsed;
+          }
+        }
+      } catch (e) {}
+
+      // Try localStorage
+      if (!passData && passId) {
+        try {
+          const localRegs = JSON.parse(localStorage.getItem('dandiya_registrations') || '[]');
+          passData = localRegs.find(r => r.pass_id === passId);
+        } catch (e) {}
+      }
+
+      // Try backend API
+      if (!passData && passId) {
+        try {
+          const res = await fetch('/api/registrations');
+          if (res.ok) {
+            const list = await res.json();
+            passData = list.find(r => r.pass_id === passId);
+          }
+        } catch (e) {}
+      }
+
+      // Fallback default sample data if opened directly without a query
+      if (!passData) {
+        passData = {
+          pass_id: passId || 'DN-RHS492',
+          full_name: 'Rocky Sharma',
+          year_course: '3rd Year / BDS',
+          phone: '9876543210',
+          email: 'student@college.edu'
+        };
+      }
+
+      // 3. Render Pass Card
+      const passEngine = window.passEngine || new PassEngine();
+      window.passEngine = passEngine;
+      passEngine.renderPassCard(passData);
+
+      // 4. Bind Action Buttons
+      const btnPdf = document.getElementById('btn-download-pdf');
+      const btnImg = document.getElementById('btn-download-img');
+      const btnShare = document.getElementById('btn-share-pass');
+
+      if (btnPdf) btnPdf.addEventListener('click', () => passEngine.downloadPassPDF());
+      if (btnImg) btnImg.addEventListener('click', () => passEngine.downloadPassImage());
+      if (btnShare) btnShare.addEventListener('click', () => passEngine.sharePass());
+
+      // Celebratory audio chime & confetti on entry
+      setTimeout(() => {
+        if (window.festiveAudio) window.festiveAudio.playCelebration();
+        if (typeof confetti === 'function') {
+          confetti({
+            particleCount: 50,
+            spread: 60,
+            origin: { y: 0.6 },
+            colors: ['#FFD700', '#FFA000', '#DC2626', '#FFF8E1']
+          });
+        }
+      }, 500);
+    });
+  </script>
+
+</body>
+</html>

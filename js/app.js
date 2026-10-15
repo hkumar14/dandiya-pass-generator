@@ -80,11 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Check URL query parameters for direct pass verification
+  // If someone lands on index.html with ?pass_id=, redirect directly to pass.html
   const urlParams = new URLSearchParams(window.location.search);
   const deepPassId = urlParams.get('pass_id');
   if (deepPassId) {
-    loadPassById(deepPassId);
+    window.location.replace(`pass.html?pass_id=${encodeURIComponent(deepPassId)}`);
+    return;
   }
 
   // Form Submission Process
@@ -160,44 +161,32 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('Persistence warning:', err);
       }
 
-      setTimeout(() => {
-        updateLoadingStatus('🎉 Digital Pass generated successfully!', 1700);
-      }, 1700);
+      // Store in storage so pass.html has immediate access
+      try {
+        sessionStorage.setItem('current_pass', JSON.stringify(record));
+        localStorage.setItem('current_pass', JSON.stringify(record));
+      } catch (e) {}
 
-      // Transition to Step 3: Digital Entry Pass view
+      setTimeout(() => {
+        updateLoadingStatus('🎉 Digital Pass generated successfully!', 1600);
+      }, 1600);
+
+      // Smoothly redirect to Page 2: pass.html
       setTimeout(() => {
         showLoadingSpiral(false);
-
-        // Render pass data into the pass card matching the reference image
-        window.passEngine.renderPass(record);
-
-        // Smooth flip transition
-        formSection.classList.remove('view-active');
-        formSection.classList.add('view-hidden');
-
-        passSection.classList.remove('view-hidden');
-        passSection.classList.add('view-active');
-
-        // Scroll smoothly to pass top
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        // Second celebratory sparkle
-        window.passEngine.triggerConfetti();
-        if (window.passEngine.showToast) {
-          window.passEngine.showToast('🎟️ Your Official Dandiya Pass is Generated!');
-        }
-      }, 2200);
+        window.location.href = `pass.html?pass_id=${encodeURIComponent(record.pass_id)}`;
+      }, 2000);
     });
   }
 
   // Show / Hide Golden Spiral Loading Screen
   function showLoadingSpiral(show) {
     if (show) {
-      loadingOverlay.classList.add('active');
-      window.passEngine.startSpiralAnimation('spiral-canvas');
+      if (loadingOverlay) loadingOverlay.classList.add('active');
+      if (window.passEngine) window.passEngine.startSpiralAnimation('spiral-canvas');
     } else {
-      loadingOverlay.classList.remove('active');
-      window.passEngine.stopSpiralAnimation();
+      if (loadingOverlay) loadingOverlay.classList.remove('active');
+      if (window.passEngine) window.passEngine.stopSpiralAnimation();
     }
   }
 
@@ -216,57 +205,5 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       inputEl.classList.remove('border-red-500', 'ring-2', 'ring-red-400');
     }, 3000);
-  }
-
-  // Digital Pass Action Buttons
-  if (btnDownloadPdf) {
-    btnDownloadPdf.addEventListener('click', () => {
-      window.passEngine.downloadPassPDF();
-    });
-  }
-
-  if (btnDownloadImg) {
-    btnDownloadImg.addEventListener('click', () => {
-      window.passEngine.downloadPassImage();
-    });
-  }
-
-  if (btnSharePass) {
-    btnSharePass.addEventListener('click', () => {
-      window.passEngine.sharePass();
-    });
-  }
-
-  // "Register Another Student" Button
-  if (btnNewRegistration) {
-    btnNewRegistration.addEventListener('click', () => {
-      if (window.festiveAudio) window.festiveAudio.playChime(520, 0.3);
-
-      // Clear inputs
-      if (registrationForm) registrationForm.reset();
-
-      passSection.classList.remove('view-active');
-      passSection.classList.add('view-hidden');
-
-      formSection.classList.remove('view-hidden');
-      formSection.classList.add('view-active');
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
-
-  // Load an existing pass by ID from local backup
-  function loadPassById(passId) {
-    if (!window.apiService) return;
-    const localList = window.apiService.getLocalRegistrations();
-    const record = localList.find(r => r.pass_id === passId);
-
-    if (record) {
-      window.passEngine.renderPass(record);
-      formSection.classList.remove('view-active');
-      formSection.classList.add('view-hidden');
-      passSection.classList.remove('view-hidden');
-      passSection.classList.add('view-active');
-    }
   }
 });

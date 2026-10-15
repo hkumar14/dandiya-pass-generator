@@ -161,6 +161,11 @@ class PassEngine {
     });
   }
 
+  // Alias for renderPass
+  renderPassCard(data) {
+    return this.renderPass(data);
+  }
+
   // Populate Pass UI matching reference image
   renderPass(data) {
     this.currentPassData = data;

@@ -102,7 +102,13 @@ const server = http.createServer((req, res) => {
   // ==========================================
   if (pathname === '/') pathname = '/index.html';
 
-  const filePath = path.join(ROOT, pathname);
+  let filePath = path.join(ROOT, pathname);
+  if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+    const publicPath = path.join(ROOT, 'public', pathname);
+    if (fs.existsSync(publicPath) && fs.statSync(publicPath).isFile()) {
+      filePath = publicPath;
+    }
+  }
 
   if (!filePath.startsWith(ROOT)) {
     res.writeHead(403, { 'Content-Type': 'text/plain' });

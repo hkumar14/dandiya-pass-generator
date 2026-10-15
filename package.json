@@ -4,7 +4,6 @@
   "description": "Mobile-optimized Dandiya Night 2026 digital registration, pass generator, and Supabase integration",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
     "dev": "node server.js"
   },
   "keywords": [

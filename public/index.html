@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Dandiya Night 2026 - Digital Registration & Pass Generator</title>
+
+  <!-- Meta & Theme Color for Mobile -->
+  <meta name="theme-color" content="#090B1E">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Official Dandiya Night 2026 Digital Registration and Entry Pass Generator">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- FontAwesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Marcellus&family=Outfit:wght@300;400;500;600;700&family=Rozha+One&display=swap" rel="stylesheet">
+
+  <!-- External CDNs -->
+  <!-- 1. Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <!-- 2. QRCode.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- 3. html2canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- 4. jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- 5. Supabase JS Client (For Magic Link Auth) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* Robust responsive container & glass input fallbacks */
+    .app-viewport {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      box-sizing: border-box;
+    }
+    .view-section {
+      width: 100%;
+      max-width: 440px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    @media (min-width: 640px) {
+      .view-section { max-width: 500px; }
+    }
+    @media (min-width: 1024px) {
+      .view-section { max-width: 540px; }
+    }
+    .glass-input {
+      background-color: #0E0C22 !important;
+      color: #FFF9E6 !important;
+      border: 1px solid rgba(242, 194, 73, 0.35) !important;
+    }
+    .glass-input:focus {
+      background-color: #151234 !important;
+      border-color: #F5D061 !important;
+      box-shadow: 0 0 16px rgba(245, 208, 97, 0.4) !important;
+    }
+    .festive-bg-image {
+      background-image: url('assets/dandiya-bg-couple.jpg'), url('/assets/dandiya-bg-couple.jpg'), url('../assets/dandiya-bg-couple.jpg');
+    }
+  </style>
+</head>
+<body class="bg-[#070913] text-white">
+
+  <!-- Ambient Festive Background Layer -->
+  <div class="festive-bg-wrapper">
+    <div class="festive-bg-image"></div>
+    <div class="festive-bg-overlay"></div>
+    <div class="lantern-light-haze"></div>
+    <div class="festive-glow-pulse"></div>
+  </div>
+
+  <!-- Background Particle System (Floating Diyas, Marigold Petals, Sparkles, Dandiya Sticks) -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Main Viewport -->
+  <div class="app-viewport w-full min-h-screen flex flex-col items-center justify-start px-3 sm:px-6 py-3 sm:py-6 overflow-x-hidden">
+    
+    <!-- Top Action Bar (Guest & Admin Modes) -->
+    <header class="w-full max-w-md sm:max-w-lg md:max-w-xl mx-auto py-2 px-1 mb-3 z-20">
+      
+      <!-- 1. Guest Header (Default for public users) -->
+      <div id="guest-header-controls" class="flex items-center justify-between w-full">
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-400/30 text-amber-300 text-[11px] font-semibold tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            NAVRATRI '26
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Audio Mute/Unmute Toggle -->
+          <button id="btn-audio-toggle" type="button" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-900/70 border border-amber-400/30 flex items-center justify-center text-xs sm:text-sm shadow-md active:scale-95 transition-transform" title="Toggle Festive Sound">
+            <i class="fa-solid fa-music text-amber-400 audio-pulse"></i>
+          </button>
+
+          <!-- Admin Login Button -->
+          <button id="btn-open-admin-login" type="button" class="px-3 h-8 sm:h-9 rounded-full bg-gradient-to-r from-amber-500/20 via-red-500/20 to-amber-500/20 hover:from-amber-500/30 hover:to-amber-500/30 border border-amber-400/40 text-amber-200 text-xs font-bold flex items-center gap-1.5 shadow-md active:scale-95 transition-all">
+            <i class="fa-solid fa-lock text-amber-400 text-xs"></i>
+            <span>Admin</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Admin Header (Visible only when logged in as authorized admin) -->
+      <div id="admin-header-controls" class="hidden items-center justify-between w-full gap-1.5">
+        <div class="flex items-center gap-1.5 overflow-hidden">
+          <span id="admin-email-badge" class="px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-[10px] font-mono font-bold truncate max-w-[110px] sm:max-w-[160px]">
+            admin
+          </span>
+          <!-- Live Registrations Count Button -->
+          <button id="btn-view-registrations" type="button" class="px-2.5 py-1 rounded-full bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black flex items-center gap-1 shadow-md transition-all whitespace-nowrap">
+            <i class="fa-solid fa-ticket"></i>
+            <span id="admin-count-display">0</span> Passes
+          </button>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <!-- 1-Click Export CSV -->
+          <button id="btn-top-export-csv" type="button" class="px-2.5 py-1 rounded-full bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-400/40 text-emerald-300 text-xs font-bold flex items-center gap-1 shadow-md transition-all whitespace-nowrap" title="Export CSV spreadsheet">
+            <i class="fa-solid fa-file-excel"></i>
+            <span class="hidden sm:inline">CSV</span>
+          </button>
+
+          <!-- Add / Manage Admins -->
+          <button id="btn-open-admins-modal" type="button" class="px-2 py-1 rounded-full bg-slate-900 hover:bg-slate-800 border border-amber-400/30 text-amber-300 text-xs font-medium flex items-center gap-1 transition-all" title="Manage Admins">
+            <i class="fa-solid fa-user-shield"></i>
+          </button>
+
+          <!-- Logout -->
+          <button id="btn-admin-logout" type="button" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-red-950/80 hover:bg-red-900 border border-red-500/40 text-red-300 flex items-center justify-center text-xs shadow-md transition-all" title="Log Out of Admin">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+
+    </header>
+
+    <!-- =======================================================================
+         VIEW 1: REGISTRATION FORM (MOBILE-FIRST)
+         ======================================================================= -->
+    <main id="view-registration" class="view-section view-active w-full max-w-md sm:max-w-lg md:max-w-xl mx-auto">
+      
+      <!-- Festive Header Banner -->
+      <div class="text-center mb-4 flex flex-col items-center">
+        <!-- College/Organization Crest Logo matching poster -->
+        <div class="relative mb-2">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-b from-amber-100 to-amber-200 p-1.5 shadow-[0_0_25px_rgba(255,215,0,0.4)] border-2 border-amber-400 flex items-center justify-center">
+            <!-- Medical Crest SVG (Caduceus, wings, wreath and book) -->
+            <svg class="w-12 h-12 text-[#4A0913]" viewBox="0 0 64 64" fill="none" stroke="currentColor">
+              <!-- Wreath -->
+              <path d="M12 40 C8 30 12 18 24 12" stroke="#C69234" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M52 40 C56 30 52 18 40 12" stroke="#C69234" stroke-width="2.5" stroke-linecap="round"/>
+              <!-- Book Base -->
+              <path d="M22 50 C26 47 30 48 32 50 C34 48 38 47 42 50 L42 55 C38 52 34 53 32 55 C30 53 26 52 22 55 Z" fill="#4A0913" stroke="#C69234" stroke-width="1.5"/>
+              <!-- Wings -->
+              <path d="M20 22 C26 19 32 23 32 23 C32 23 38 19 44 22 C39 28 32 26 32 26 C32 26 25 28 20 22 Z" fill="#C69234"/>
+              <!-- Staff -->
+              <line x1="32" y1="14" x2="32" y2="48" stroke="#4A0913" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="32" cy="13" r="3.5" fill="#C69234"/>
+              <!-- Snakes -->
+              <path d="M26 36 C34 32 38 28 32 24 C26 28 30 32 38 36" stroke="#4A0913" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <!-- Tiny halo badge -->
+          <div class="absolute -bottom-1 -right-1 bg-amber-400 text-[#3B040B] text-[9px] font-black px-1.5 py-0.5 rounded-full border border-white">
+            2026
+          </div>
+        </div>
+
+        <!-- Event Main Title -->
+        <h1 class="font-festive text-3xl sm:text-4xl font-extrabold tracking-wider text-gold-gradient mb-0.5">
+          DANDIYA NIGHT
+        </h1>
+        <p class="font-serif-royal text-[11px] sm:text-xs font-bold text-amber-200 tracking-[0.28em] uppercase">
+          DANCE • CELEBRATE • TOGETHER
+        </p>
+
+        <!-- Date & Location Capsule -->
+        <div class="mt-2.5 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-red-950/70 via-amber-950/70 to-red-950/70 border border-amber-400/40 text-amber-200 text-xs">
+          <span><i class="fa-regular fa-calendar text-amber-400 mr-1"></i>19 OCT 2026</span>
+          <span class="text-amber-500">•</span>
+          <span><i class="fa-solid fa-location-dot text-amber-400 mr-1"></i>COLLEGE GROUND</span>
+        </div>
+      </div>
+
+      <!-- Registration Glass Card -->
+      <div class="glass-panel p-5 sm:p-7 mb-4">
+        <div class="flex items-center justify-between pb-3 mb-4 border-b border-amber-400/20">
+          <div>
+            <h2 class="font-serif-royal text-lg font-bold text-amber-100 flex items-center gap-2">
+              <i class="fa-solid fa-ticket text-amber-400 text-sm"></i> Student Registration
+            </h2>
+            <p class="text-[11px] text-amber-200/70 mt-0.5">Instant Entry Pass will be generated with a QR code</p>
+          </div>
+          <span class="text-xs bg-red-600/30 border border-red-500/40 text-red-200 px-2 py-0.5 rounded-md font-medium">
+            Limited Entry
+          </span>
+        </div>
+
+        <form id="registration-form" class="space-y-4" novalidate>
+          
+          <!-- Full Name -->
+          <div>
+            <label for="input-name" class="block text-xs font-semibold text-amber-200/90 mb-1 tracking-wide">
+              FULL NAME <span class="text-red-400">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-amber-300/60 text-sm">
+                <i class="fa-regular fa-user"></i>
+              </span>
+              <input
+                type="text"
+                id="input-name"
+                name="full_name"
+                required
+                placeholder="e.g. Rocky Sharma"
+                class="glass-input w-full pl-10 pr-3.5 py-3 rounded-xl text-sm font-medium bg-[#0E0C22] text-amber-100 border border-amber-400/35 placeholder-amber-200/40 focus:ring-2 focus:ring-amber-400 focus:bg-[#151234] focus:outline-none transition-all"
+                autocomplete="name"
+              >
+            </div>
+          </div>
+
+          <!-- Year & Course Selection Grid -->
+          <div class="grid grid-cols-2 gap-3">
+            <!-- Year -->
+            <div>
+              <label for="select-year" class="block text-xs font-semibold text-amber-200/90 mb-1 tracking-wide">
+                YEAR <span class="text-red-400">*</span>
+              </label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-amber-300/60 text-sm">
+                  <i class="fa-regular fa-calendar-check"></i>
+                </span>
+                <select
+                  id="select-year"
+                  name="student_year"
+                  required
+                  class="glass-input w-full pl-9 pr-7 py-3 rounded-xl text-xs sm:text-sm font-semibold text-amber-100 bg-[#0E0C22] appearance-none focus:ring-1 focus:ring-amber-400 cursor-pointer"
+                >
+                  <option value="" disabled selected>Select Year</option>
+                  <option value="1st Year">1st Year</option>
+                  <option value="2nd Year">2nd Year</option>
+                  <option value="3rd Year">3rd Year</option>
+                  <option value="4th Year">4th Year</option>
+                  <option value="5th Year">5th Year</option>
+                </select>
+                <span class="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none text-amber-400/60 text-xs">
+                  <i class="fa-solid fa-chevron-down"></i>
+                </span>
+              </div>
+            </div>
+
+            <!-- Course -->
+            <div>
+              <label for="select-course" class="block text-xs font-semibold text-amber-200/90 mb-1 tracking-wide">
+                COURSE <span class="text-red-400">*</span>
+              </label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-amber-300/60 text-sm">
+                  <i class="fa-solid fa-graduation-cap"></i>
+                </span>
+                <select
+                  id="select-course"
+                  name="student_course"
+                  required
+                  class="glass-input w-full pl-9 pr-7 py-3 rounded-xl text-xs sm:text-sm font-semibold text-amber-100 bg-[#0E0C22] appearance-none focus:ring-1 focus:ring-amber-400 cursor-pointer"
+                >
+                  <option value="" disabled selected>Select Course</option>
+                  <option value="BDS">BDS</option>
+                  <option value="MDS">MDS</option>
+                </select>
+                <span class="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none text-amber-400/60 text-xs">
+                  <i class="fa-solid fa-chevron-down"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Number -->
+          <div>
+            <label for="input-phone" class="block text-xs font-semibold text-amber-200/90 mb-1 tracking-wide">
+              WHATSAPP / CONTACT NUMBER <span class="text-red-400">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-amber-300/60 text-sm">
+                <i class="fa-solid fa-phone"></i>
+              </span>
+              <input
+                type="tel"
+                id="input-phone"
+                name="phone"
+                required
+                maxlength="14"
+                placeholder="e.g. 9876543210"
+                class="glass-input w-full pl-10 pr-3.5 py-3 rounded-xl text-sm font-medium bg-[#0E0C22] text-amber-100 border border-amber-400/35 placeholder-amber-200/40 focus:ring-2 focus:ring-amber-400 focus:bg-[#151234] focus:outline-none transition-all"
+                autocomplete="tel"
+              >
+            </div>
+          </div>
+
+          <!-- Email Address -->
+          <div>
+            <label for="input-email" class="block text-xs font-semibold text-amber-200/90 mb-1 tracking-wide">
+              EMAIL ADDRESS <span class="text-red-400">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-amber-300/60 text-sm">
+                <i class="fa-regular fa-envelope"></i>
+              </span>
+              <input
+                type="email"
+                id="input-email"
+                name="email"
+                required
+                placeholder="e.g. student@college.edu"
+                class="glass-input w-full pl-10 pr-3.5 py-3 rounded-xl text-sm font-medium bg-[#0E0C22] text-amber-100 border border-amber-400/35 placeholder-amber-200/40 focus:ring-2 focus:ring-amber-400 focus:bg-[#151234] focus:outline-none transition-all"
+                autocomplete="email"
+              >
+            </div>
+          </div>
+
+          <!-- Register Button -->
+          <div class="pt-2">
+            <button
+              type="submit"
+              id="btn-register"
+              class="btn-gold-action btn-shimmer w-full py-3.5 px-6 flex items-center justify-center gap-2 text-base shadow-xl"
+            >
+              <span>REGISTER NOW</span>
+              <i class="fa-solid fa-arrow-right text-sm"></i>
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Footer event advisory -->
+      <div class="text-center px-4">
+        <p class="text-[11px] text-amber-200/60">
+          ✨ Traditional festive dress code encouraged (Chaniya Choli / Kurta)
+        </p>
+        <p class="text-[10px] text-amber-400/40 mt-1">
+          Dandiya sticks will be provided at the entrance arena.
+        </p>
+      </div>
+
+    </main>
+
+    <!-- =======================================================================
+         VIEW 2: LOADING SCREEN WITH GOLDEN SPIRAL
+         ======================================================================= -->
+    <div id="loading-overlay">
+      <div class="flex flex-col items-center justify-center p-6 text-center max-w-xs">
+        
+        <!-- Golden Spiral Particle Canvas -->
+        <div class="relative mb-4">
+          <canvas id="spiral-canvas"></canvas>
+        </div>
+
+        <h3 class="font-festive text-xl text-gold-gradient font-bold tracking-wider mb-2">
+          DANDIYA NIGHT
+        </h3>
+
+        <p class="font-serif-royal text-sm font-semibold text-amber-200 tracking-wider mb-2">
+          Generating Your Digital Pass...
+        </p>
+
+        <div id="loading-status-text" class="text-xs text-amber-300/80 bg-amber-950/40 px-3 py-1.5 rounded-full border border-amber-500/20">
+          Validating credentials...
+        </div>
+
+        <!-- Floating ambient sparkles -->
+        <div class="mt-4 flex items-center gap-2 text-amber-400 text-xs">
+          <span>✦</span>
+          <span>✦</span>
+          <span>✦</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- =======================================================================
+         FESTIVE FOOTER WITH MANDALA & LOTUS ORNAMENTATION
+         ======================================================================= -->
+    <footer class="w-full max-w-md sm:max-w-lg md:max-w-xl mx-auto relative mt-8 mb-6 z-10 select-none overflow-hidden text-center">
+      
+      <!-- Footer Mandala Border Image -->
+      <div class="relative w-full overflow-hidden rounded-t-2xl border-t border-x border-amber-400/30 bg-[#06081B]/80 backdrop-blur-md shadow-2xl">
+        <img
+          src="assets/dandiya-footer-mandala.png"
+          alt="Navratri Lotus Mandala Border"
+          class="w-full h-auto object-cover object-bottom block pointer-events-none footer-mandala-banner"
+          onerror="if (!this._tried) { this._tried = true; this.src = '/assets/dandiya-footer-mandala.png'; }"
+        />
+        <!-- Breathing Golden Lotus Glow Overlay -->
+        <div class="footer-lotus-glow"></div>
+      </div>
+
+      <!-- Festive Footer Text Banner -->
+      <div class="bg-[#050819]/95 border-b border-x border-amber-500/30 rounded-b-2xl py-3 px-4 backdrop-blur-md">
+        <div class="flex items-center justify-center gap-2 text-amber-400 text-xs font-bold font-festive tracking-widest uppercase mb-1">
+          <span class="text-amber-500">✦</span>
+          <span>Shubh Navratri 2026 • Dandiya Raas</span>
+          <span class="text-amber-500">✦</span>
+        </div>
+        <p class="text-[10px] text-amber-200/60 max-w-xs mx-auto">
+          College Annual Dandiya Celebration • Non-Transferable Digital Pass System
+        </p>
+      </div>
+
+    </footer>
+
+    <!-- =======================================================================
+         MODAL 1: ADMIN LOGIN MODAL (PASSWORDLESS EMAIL OTP / MAGIC LINK)
+         ======================================================================= -->
+    <div id="admin-login-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+      <div class="bg-[#101326] border border-amber-500/40 rounded-2xl max-w-sm w-full p-5 sm:p-6 text-sm shadow-2xl relative">
+        
+        <button id="btn-close-admin-login" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+
+        <div class="text-center mb-4">
+          <div class="w-12 h-12 rounded-full bg-amber-500/15 border border-amber-400/40 text-amber-400 flex items-center justify-center text-xl mx-auto mb-2">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h2 class="font-festive text-xl font-bold text-amber-200">Admin Sign-In</h2>
+          <p class="text-xs text-amber-100/70 mt-1">
+            Enter your email to receive a secure login verification code.
+          </p>
+        </div>
+
+        <form id="admin-login-form" class="space-y-3.5" onsubmit="return false;">
+          <div>
+            <label class="block text-xs font-semibold text-amber-200 mb-1">Admin Email Address</label>
+            <input
+              type="email"
+              id="admin-login-email"
+              placeholder="example@gmail.com"
+              class="w-full bg-slate-950 border border-amber-500/30 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+              required
+            >
+          </div>
+
+          <button
+            type="button"
+            id="btn-send-otp"
+            class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5"
+          >
+            <i class="fa-solid fa-paper-plane"></i> Send Verification Link
+          </button>
+
+          <!-- OTP Input Section (Appears after sending link) -->
+          <div id="otp-container" class="hidden pt-2 border-t border-slate-800 space-y-2">
+            <label class="block text-xs font-semibold text-amber-200">Enter 6-Digit Email Code</label>
+            <input
+              type="text"
+              id="admin-login-otp"
+              placeholder="123456"
+              maxlength="8"
+              class="w-full bg-slate-950 border border-amber-500/30 rounded-xl px-3.5 py-2 text-center text-sm font-mono tracking-widest text-amber-300 placeholder-slate-600 focus:outline-none focus:border-amber-400"
+            >
+            <button
+              type="button"
+              id="btn-verify-otp"
+              class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5"
+            >
+              <i class="fa-solid fa-check"></i> Verify & Sign In
+            </button>
+          </div>
+
+          <div id="admin-login-status" class="text-xs"></div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- =======================================================================
+         MODAL 2: ADMIN REGISTRATIONS MANAGER & CSV EXPORT
+         ======================================================================= -->
+    <div id="admin-registrations-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 hidden">
+      <div class="bg-[#101326] border border-amber-400/40 rounded-2xl max-w-xl w-full p-4 sm:p-5 max-h-[90vh] flex flex-col text-sm shadow-2xl">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-3 border-b border-amber-400/20 mb-3">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-ticket text-amber-400 text-base"></i>
+            <span class="font-bold text-amber-200 font-serif-royal">Event Registrations</span>
+            <span id="modal-total-count" class="bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[11px] font-mono px-2 py-0.5 rounded-full ml-1">
+              0
+            </span>
+          </div>
+          <button id="btn-close-registrations-modal" class="text-slate-400 hover:text-white p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Controls: Search & Export CSV -->
+        <div class="flex gap-2 mb-3">
+          <div class="relative flex-1">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input
+              type="text"
+              id="admin-search-input"
+              placeholder="Search by name, pass ID, phone..."
+              class="w-full bg-slate-900 border border-amber-500/30 rounded-lg pl-8 pr-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
+            >
+          </div>
+          <button
+            type="button"
+            id="btn-export-csv-modal"
+            class="px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors whitespace-nowrap shadow-md"
+            title="Download CSV spreadsheet"
+          >
+            <i class="fa-solid fa-file-excel"></i>
+            <span>Export CSV</span>
+          </button>
+        </div>
+
+        <!-- Table View -->
+        <div class="flex-1 overflow-y-auto border border-amber-900/40 rounded-lg bg-slate-950/70">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-900/90 sticky top-0 text-[11px] uppercase tracking-wider text-amber-300 font-semibold border-b border-amber-500/30">
+              <tr>
+                <th class="py-2 px-3">Pass ID</th>
+                <th class="py-2 px-3">Name</th>
+                <th class="py-2 px-3">Course</th>
+                <th class="py-2 px-3">Phone</th>
+              </tr>
+            </thead>
+            <tbody id="admin-table-tbody">
+              <!-- Dynamically Populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-3 flex items-center justify-between text-[11px] text-amber-200/60 pt-2 border-t border-amber-500/20">
+          <span>Click any Pass ID to open and verify ticket pass</span>
+          <span>Gate Scanner Ready</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =======================================================================
+         MODAL 3: ADD EVENT ORGANIZER / ADMIN
+         ======================================================================= -->
+    <div id="admin-management-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+      <div class="bg-[#101326] border border-amber-400/40 rounded-2xl max-w-sm w-full p-5 max-h-[90vh] overflow-y-auto text-sm shadow-2xl">
+        
+        <div class="flex items-center justify-between pb-3 border-b border-amber-400/20 mb-4">
+          <div class="flex items-center gap-2 text-amber-300 font-bold font-serif-royal">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Add Event Organizer</span>
+          </div>
+          <button id="btn-close-admins-modal" class="text-slate-400 hover:text-white p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <p class="text-xs text-amber-100/70 mb-4 leading-relaxed">
+          Enter an organizer email address to grant dashboard access for attendance tracking and CSV exports.
+        </p>
+
+        <!-- Add New Admin Email Form -->
+        <div class="bg-slate-950/90 p-4 rounded-xl border border-amber-500/30 mb-2 space-y-3">
+          <label class="block text-xs font-semibold text-amber-200">Organizer Email Address</label>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input
+              type="email"
+              id="new-admin-email"
+              placeholder="example@gmail.com"
+              class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+            >
+            <button
+              type="button"
+              id="btn-add-admin-submit"
+              class="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-xs rounded-lg hover:from-amber-400 hover:to-amber-500 transition-all shadow-md flex items-center justify-center gap-1.5"
+            >
+              <i class="fa-solid fa-user-plus"></i> Add Admin
+            </button>
+          </div>
+          <div id="admin-add-status" class="text-xs"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/api-client.js"></script>
+  <script src="js/pass-engine.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
