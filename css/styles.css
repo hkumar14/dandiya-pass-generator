@@ -58,30 +58,30 @@ body {
 
 .festive-bg-image {
   position: absolute;
-  inset: -5%;
-  width: 110%;
-  height: 110%;
-  background-image: url('../assets/dandiya-bg.jpg');
+  inset: -4%;
+  width: 108%;
+  height: 108%;
+  background-image: url('../assets/dandiya-bg-couple.jpg');
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
-  filter: brightness(0.65) saturate(1.25);
-  animation: bgBreathing 26s ease-in-out infinite alternate;
+  filter: brightness(0.68) saturate(1.25);
+  animation: bgBreathing 24s ease-in-out infinite alternate;
   transform-origin: center center;
 }
 
 @keyframes bgBreathing {
   0% {
     transform: scale(1) translate(0, 0);
-    filter: brightness(0.6) saturate(1.2);
+    filter: brightness(0.65) saturate(1.2);
   }
   50% {
-    transform: scale(1.05) translate(-1%, -1%);
-    filter: brightness(0.72) saturate(1.35);
+    transform: scale(1.04) translate(-0.8%, -0.5%);
+    filter: brightness(0.75) saturate(1.35);
   }
   100% {
-    transform: scale(1.02) translate(1%, 0.5%);
-    filter: brightness(0.65) saturate(1.25);
+    transform: scale(1.02) translate(0.6%, 0.4%);
+    filter: brightness(0.68) saturate(1.25);
   }
 }
 
@@ -90,24 +90,47 @@ body {
   position: absolute;
   inset: 0;
   background: radial-gradient(
-    circle at 50% 25%,
-    rgba(255, 170, 0, 0.22) 0%,
-    rgba(107, 14, 27, 0.45) 45%,
-    rgba(9, 11, 30, 0.88) 85%,
-    rgba(5, 7, 18, 0.96) 100%
+    circle at 50% 32%,
+    rgba(9, 11, 30, 0.42) 0%,
+    rgba(15, 18, 48, 0.72) 55%,
+    rgba(5, 7, 18, 0.92) 100%
   );
   mix-blend-mode: multiply;
 }
 
+/* Golden Ambient Lantern Glow at Top */
+.lantern-light-haze {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 220px;
+  background: radial-gradient(
+    ellipse 85% 65% at 50% 0%,
+    rgba(255, 190, 11, 0.32) 0%,
+    rgba(251, 86, 7, 0.15) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  animation: lanternFlicker 4s ease-in-out infinite alternate;
+  mix-blend-mode: screen;
+}
+
+@keyframes lanternFlicker {
+  0% { opacity: 0.55; transform: scaleY(0.96); }
+  50% { opacity: 0.90; transform: scaleY(1.04); }
+  100% { opacity: 0.70; transform: scaleY(1); }
+}
+
 .festive-glow-pulse {
   position: absolute;
-  top: 10%;
+  top: 15%;
   left: 50%;
   transform: translateX(-50%);
   width: 90vw;
   max-width: 600px;
   height: 350px;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, rgba(220, 38, 38, 0.15) 50%, transparent 75%);
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.22) 0%, rgba(220, 38, 38, 0.14) 50%, transparent 75%);
   filter: blur(45px);
   animation: glowPulse 5s ease-in-out infinite alternate;
   pointer-events: none;
@@ -741,4 +764,55 @@ body {
 ::-webkit-scrollbar-thumb {
   background: rgba(242, 194, 73, 0.4);
   border-radius: 999px;
+}
+
+/* ==========================================================================
+   FESTIVE FOOTER & LOTUS MANDALA ANIMATIONS
+   ========================================================================== */
+.footer-mandala-banner {
+  filter: drop-shadow(0 0 14px rgba(242, 194, 73, 0.3));
+  animation: footerMandalaAura 5s ease-in-out infinite alternate;
+}
+
+@keyframes footerMandalaAura {
+  0% {
+    filter: drop-shadow(0 0 8px rgba(242, 194, 73, 0.25));
+  }
+  100% {
+    filter: drop-shadow(0 0 24px rgba(255, 183, 3, 0.55)) brightness(1.08);
+  }
+}
+
+.footer-lotus-glow {
+  position: absolute;
+  bottom: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 85px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 215, 0, 0.52) 0%,
+    rgba(255, 120, 0, 0.28) 45%,
+    transparent 75%
+  );
+  filter: blur(16px);
+  pointer-events: none;
+  animation: lotusBreathing 3.5s ease-in-out infinite alternate;
+  mix-blend-mode: screen;
+}
+
+@keyframes lotusBreathing {
+  0% {
+    opacity: 0.45;
+    transform: translateX(-50%) scale(0.92);
+  }
+  50% {
+    opacity: 0.95;
+    transform: translateX(-50%) scale(1.18);
+  }
+  100% {
+    opacity: 0.55;
+    transform: translateX(-50%) scale(1);
+  }
 }

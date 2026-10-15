@@ -20,10 +20,6 @@ module.exports = async (req, res) => {
   return res.status(200).json({
     isConfigured: !!(supabaseUrl && supabaseAnonKey),
     supabaseUrl,
-    supabaseAnonKey,
-    defaultAdmins: [
-      'kumarprasadhimanshu@gmail.com',
-      'hk624234@gmail.com'
-    ]
+    supabaseAnonKey
   });
 };

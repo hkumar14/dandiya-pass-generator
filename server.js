@@ -122,8 +122,27 @@ const server = http.createServer((req, res) => {
 
     res.writeHead(200, { 'Content-Type': contentType });
     const stream = fs.createReadStream(filePath);
+    stream.on('error', (streamErr) => {
+      console.warn('Stream error:', streamErr.message);
+      if (!res.headersSent) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('500 Internal Error');
+      }
+    });
     stream.pipe(res);
   });
+});
+
+server.on('error', (err) => {
+  console.error('Server HTTP error:', err.message);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception (handled):', err.message);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled Rejection (handled):', reason);
 });
 
 server.listen(PORT, () => {

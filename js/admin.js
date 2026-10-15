@@ -116,7 +116,7 @@ class AdminManager {
       this.renderAdminHeader();
       this.refreshRegistrationsCount();
     } else {
-      this.showToast(`⚠️ Access Denied: ${clean} is not an authorized administrator.`);
+      this.showToast('⚠️ Access restricted. Only event organizers may enter.');
       this.logout();
     }
   }
@@ -134,8 +134,8 @@ class AdminManager {
 
     const adminEmailBadge = document.getElementById('admin-email-badge');
     if (adminEmailBadge) {
-      adminEmailBadge.textContent = this.currentAdminEmail;
-      adminEmailBadge.title = `Logged in as ${this.currentAdminEmail}`;
+      adminEmailBadge.innerHTML = '<i class="fa-solid fa-crown text-amber-400 mr-1"></i> Admin';
+      adminEmailBadge.title = 'Event Organizer Mode';
     }
   }
 
@@ -378,7 +378,7 @@ class AdminManager {
         if (verified) {
           loginModal.classList.add('hidden');
           this.handleAuthenticatedUser(email);
-          this.showToast(`🎉 Welcome back, Admin ${email}!`);
+          this.showToast('🎉 Welcome back, Organizer!');
         } else {
           loginStatusMsg.className = 'text-xs text-red-400 mt-2 block';
           loginStatusMsg.textContent = 'Invalid verification code. Please check your email.';
@@ -452,7 +452,6 @@ class AdminManager {
     if (btnOpenAdminsModal) {
       btnOpenAdminsModal.addEventListener('click', () => {
         adminsModal.classList.remove('hidden');
-        this.renderAdminsList();
         if (adminAddStatus) adminAddStatus.textContent = '';
       });
     }
@@ -466,6 +465,14 @@ class AdminManager {
     if (btnAddAdminSubmit) {
       btnAddAdminSubmit.addEventListener('click', async () => {
         const email = newAdminEmailInput.value.trim().toLowerCase();
+        if (!email || !email.includes('@')) {
+          if (adminAddStatus) {
+            adminAddStatus.textContent = 'Please enter a valid email address.';
+            adminAddStatus.className = 'text-xs text-red-400 mt-2 block';
+          }
+          return;
+        }
+
         btnAddAdminSubmit.disabled = true;
         btnAddAdminSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
 
@@ -474,7 +481,7 @@ class AdminManager {
         btnAddAdminSubmit.innerHTML = '<i class="fa-solid fa-user-plus"></i> Add Admin';
 
         if (adminAddStatus) {
-          adminAddStatus.textContent = res.message;
+          adminAddStatus.textContent = res.success ? `✅ Admin privileges granted.` : res.message;
           adminAddStatus.className = res.success
             ? 'text-xs text-emerald-400 mt-2 block'
             : 'text-xs text-red-400 mt-2 block';
@@ -482,7 +489,6 @@ class AdminManager {
 
         if (res.success) {
           newAdminEmailInput.value = '';
-          this.renderAdminsList();
         }
       });
     }
@@ -511,23 +517,6 @@ class AdminManager {
     `).join('');
   }
 
-  renderAdminsList() {
-    const listEl = document.getElementById('admins-list-container');
-    if (!listEl) return;
-
-    listEl.innerHTML = this.allAdmins.map(email => `
-      <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-shield-halved text-amber-400 text-sm"></i>
-          <span class="font-mono text-amber-100">${escapeHtml(email)}</span>
-        </div>
-        ${this.primaryAdmins.includes(email)
-          ? '<span class="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-medium">Primary Admin</span>'
-          : '<span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">Admin</span>'
-        }
-      </div>
-    `).join('');
-  }
 
   showToast(message) {
     if (window.passEngine && window.passEngine.showToast) {
