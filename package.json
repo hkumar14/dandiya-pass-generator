@@ -1,0 +1,25 @@
+{
+  "name": "dandiya-night-pass-generator",
+  "version": "1.0.0",
+  "description": "Mobile-optimized Dandiya Night 2026 digital registration, pass generator, and Supabase integration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "dandiya",
+    "navratri",
+    "pass-generator",
+    "ticket",
+    "supabase",
+    "qr-code",
+    "pdf"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
+    "dotenv": "^18.0.8"
+  }
+}

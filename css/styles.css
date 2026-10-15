@@ -1,0 +1,744 @@
+/* ==========================================================================
+   DANDIYA NIGHT - FESTIVE MOBILE STYLES & ANIMATIONS
+   Theme: Deep Royal Blue, Vibrant Crimson, Antique Gold, Glassmorphism
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Marcellus&family=Outfit:wght@300;400;500;600;700&family=Rozha+One&family=Yatra+One&display=swap');
+
+:root {
+  --color-royal-blue: #090B1E;
+  --color-royal-indigo: #151838;
+  --color-crimson: #6B0E1B;
+  --color-deep-burgundy: #400710;
+  --color-gold: #F2C249;
+  --color-gold-light: #FFE082;
+  --color-gold-dark: #B8860B;
+  --color-amber-glow: rgba(255, 179, 0, 0.4);
+  --color-ivory-pass: #FBF8F1;
+  --font-festive-title: 'Cinzel Decorative', 'Cinzel', serif;
+  --font-pass-title: 'Rozha One', 'Marcellus', serif;
+  --font-serif: 'Cinzel', serif;
+  --font-body: 'Outfit', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+input, select, textarea {
+  user-select: text;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #070913;
+  color: #FFFFFF;
+  font-family: var(--font-body);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ==========================================================================
+   AMBIENT FESTIVE BACKGROUND ANIMATIONS
+   ========================================================================== */
+.festive-bg-wrapper {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.festive-bg-image {
+  position: absolute;
+  inset: -5%;
+  width: 110%;
+  height: 110%;
+  background-image: url('../assets/dandiya-bg.jpg');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  filter: brightness(0.65) saturate(1.25);
+  animation: bgBreathing 26s ease-in-out infinite alternate;
+  transform-origin: center center;
+}
+
+@keyframes bgBreathing {
+  0% {
+    transform: scale(1) translate(0, 0);
+    filter: brightness(0.6) saturate(1.2);
+  }
+  50% {
+    transform: scale(1.05) translate(-1%, -1%);
+    filter: brightness(0.72) saturate(1.35);
+  }
+  100% {
+    transform: scale(1.02) translate(1%, 0.5%);
+    filter: brightness(0.65) saturate(1.25);
+  }
+}
+
+/* Layered Ambient Light Gradient */
+.festive-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 25%,
+    rgba(255, 170, 0, 0.22) 0%,
+    rgba(107, 14, 27, 0.45) 45%,
+    rgba(9, 11, 30, 0.88) 85%,
+    rgba(5, 7, 18, 0.96) 100%
+  );
+  mix-blend-mode: multiply;
+}
+
+.festive-glow-pulse {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90vw;
+  max-width: 600px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, rgba(220, 38, 38, 0.15) 50%, transparent 75%);
+  filter: blur(45px);
+  animation: glowPulse 5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes glowPulse {
+  0% { opacity: 0.5; transform: translateX(-50%) scale(0.95); }
+  100% { opacity: 0.85; transform: translateX(-50%) scale(1.08); }
+}
+
+/* Particle Canvas Layer */
+#particle-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* App Container */
+.app-viewport {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 16px 12px 32px 12px;
+}
+
+/* ==========================================================================
+   GOLDEN TYPOGRAPHY & LUXURY EFFECTS
+   ========================================================================== */
+.font-festive {
+  font-family: var(--font-festive-title);
+}
+
+.font-serif-royal {
+  font-family: var(--font-serif);
+}
+
+.font-pass {
+  font-family: var(--font-pass-title);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #FFF6D6 0%, #F5D061 25%, #E5A93C 50%, #FFDF73 75%, #B37D14 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(245, 208, 97, 0.45));
+}
+
+.text-gold-ribbon {
+  background: linear-gradient(180deg, #5A0813 0%, #3B040B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.6), 0 0 30px rgba(255, 170, 0, 0.4);
+}
+
+.border-gold-subtle {
+  border: 1px solid rgba(242, 194, 73, 0.35);
+}
+
+/* ==========================================================================
+   GLASSMORPHIC CARDS
+   ========================================================================== */
+.glass-panel {
+  background: rgba(18, 14, 38, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 215, 0, 0.28);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.55),
+              0 0 25px rgba(242, 194, 73, 0.12),
+              inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  border-radius: 28px;
+}
+
+.glass-input {
+  background: rgba(10, 8, 25, 0.65);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(242, 194, 73, 0.3);
+  color: #FFF9E6;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-input:focus {
+  outline: none;
+  background: rgba(20, 15, 45, 0.85);
+  border-color: #F5D061;
+  box-shadow: 0 0 16px rgba(245, 208, 97, 0.4), inset 0 1px 2px rgba(255, 215, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   BUTTONS & TOUCH RIPPLES
+   ========================================================================== */
+.btn-gold-action {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #FFE89E 0%, #F5C542 25%, #E09F1B 55%, #F7D46D 80%, #C98B14 100%);
+  color: #38040C;
+  font-family: var(--font-serif);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 9999px;
+  box-shadow: 0 8px 24px rgba(224, 159, 27, 0.5),
+              0 0 20px rgba(255, 215, 0, 0.35),
+              inset 0 2px 3px rgba(255, 255, 255, 0.7);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.btn-gold-action:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(224, 159, 27, 0.65), 0 0 28px rgba(255, 215, 0, 0.5);
+}
+
+.btn-gold-action:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Shimmer sweep animation */
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    transparent 100%
+  );
+  transform: rotate(25deg);
+  animation: shimmerSweep 3.5s infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmerSweep {
+  0% { left: -60%; }
+  35% { left: 140%; }
+  100% { left: 140%; }
+}
+
+/* Touch ripple circle */
+.ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  transform: scale(0);
+  animation: rippleAnim 0.65s linear;
+  pointer-events: none;
+}
+
+@keyframes rippleAnim {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   STEP 2: GOLDEN SPIRAL LOADING SCREEN
+   ========================================================================== */
+#loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: radial-gradient(circle at center, rgba(30, 8, 20, 0.95) 0%, rgba(8, 9, 24, 0.98) 100%);
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+#loading-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#spiral-canvas {
+  width: 240px;
+  height: 240px;
+}
+
+.loading-text-glow {
+  color: #FFF2C6;
+  font-family: var(--font-serif);
+  text-shadow: 0 0 12px rgba(245, 208, 97, 0.7);
+  letter-spacing: 0.1em;
+}
+
+/* ==========================================================================
+   STEP 3: DIGITAL ENTRY PASS (EXACT TEMPLATE MATCH)
+   ========================================================================== */
+.pass-perspective-wrapper {
+  perspective: 1200px;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.pass-ticket-card {
+  width: 100%;
+  background: var(--color-ivory-pass);
+  border-radius: 26px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7),
+              0 0 35px rgba(242, 194, 73, 0.25);
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-style: preserve-3d;
+  color: #2D080E;
+}
+
+/* Top Dark Maroon Header */
+.pass-top-header {
+  background: #480913;
+  padding: 12px 16px 8px 16px;
+  text-align: center;
+  border-top-left-radius: 26px;
+  border-top-right-radius: 26px;
+}
+
+.pass-header-badge {
+  color: #F8D882;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+/* Golden Ribbon Band */
+.pass-gold-ribbon {
+  background: linear-gradient(135deg, #F3D273 0%, #FFEBA3 30%, #E3AC3B 70%, #F5CE66 100%);
+  padding: 12px 14px 10px 14px;
+  text-align: center;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.6),
+              inset 0 -2px 4px rgba(150, 95, 10, 0.3),
+              0 4px 10px rgba(72, 9, 19, 0.2);
+}
+
+.pass-ribbon-title {
+  font-family: var(--font-pass-title);
+  font-size: 27px;
+  line-height: 1.1;
+  font-weight: 800;
+  color: #4D0914;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.pass-ribbon-subtitle {
+  font-family: var(--font-serif);
+  font-size: 10px;
+  font-weight: 700;
+  color: #4D0914;
+  letter-spacing: 0.24em;
+  margin-top: 2px;
+}
+
+/* Pass Middle Content */
+.pass-body-container {
+  padding: 18px 16px 14px 16px;
+  background-color: #FAF5EA;
+  background-image: radial-gradient(#E8D5B5 0.75px, transparent 0.75px);
+  background-size: 16px 16px;
+  position: relative;
+}
+
+/* Left Pill Cards */
+.pass-info-pill {
+  background: #FFFFFF;
+  border: 1.2px solid #EADBCE;
+  border-radius: 16px;
+  padding: 11px 13px;
+  box-shadow: 0 3px 8px rgba(120, 60, 30, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 11px;
+  overflow: visible !important;
+}
+
+.pass-pill-icon-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #F8EFE3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #65111E;
+  font-size: 16px;
+  flex-shrink: 0;
+  border: 1px solid #E6D2BA;
+}
+
+.pass-pill-label {
+  font-family: var(--font-serif);
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #65111E;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  margin-bottom: 2px;
+}
+
+.pass-pill-value {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 800;
+  color: #1A0D08;
+  line-height: 1.35;
+  margin-top: 1px;
+  word-break: break-word;
+  overflow: visible !important;
+}
+
+.pass-id-highlight {
+  color: #8C1423;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+/* Right QR Card */
+.pass-qr-card {
+  background: #FFFFFF;
+  border: 1.2px solid #EADBCE;
+  border-radius: 20px;
+  padding: 12px 10px 10px 10px;
+  box-shadow: 0 4px 12px rgba(120, 60, 30, 0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.qr-code-wrapper {
+  background: #FFFFFF;
+  padding: 6px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.qr-code-wrapper img, .qr-code-wrapper canvas {
+  display: block;
+  width: 110px !important;
+  height: 110px !important;
+  margin: 0 auto;
+}
+
+.pass-scan-badge {
+  background: #0D1127;
+  color: #F8D882;
+  font-family: var(--font-serif);
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  padding: 5px 12px;
+  border-radius: 999px;
+  margin-top: 8px;
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.pass-qr-subtext {
+  font-size: 8px;
+  font-weight: 700;
+  color: #5D4037;
+  letter-spacing: 0.08em;
+  line-height: 1.35;
+  margin-top: 6px;
+  text-transform: uppercase;
+}
+
+/* Perforated Divider with Center Star (Smooth edges matching template) */
+.pass-perforated-row {
+  position: relative;
+  width: 100%;
+  height: 26px;
+  background: #FAF5EA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.perforated-dashed-line {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 50%;
+  border-top: 1.8px dashed #D6B98D;
+}
+
+.perforated-star-badge {
+  position: relative;
+  z-index: 5;
+  width: 24px;
+  height: 24px;
+  background: #FAF5EA;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #C69234;
+  font-size: 13px;
+}
+
+/* Event Details Bar (Gold Tinted 3 Columns) */
+.pass-event-details-bar {
+  background: #F3EBD8;
+  border: 1.2px solid #E4D5B9;
+  border-radius: 16px;
+  padding: 10px 6px;
+  margin: 4px 16px 12px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  text-align: center;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.event-detail-item {
+  position: relative;
+  padding: 0 4px;
+}
+
+.event-detail-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 15%;
+  height: 70%;
+  width: 1px;
+  background: #D8C6A5;
+}
+
+.event-detail-icon {
+  font-size: 14px;
+  color: #5A0813;
+  margin-bottom: 2px;
+}
+
+.event-detail-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #3B040B;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.event-detail-subtitle {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #4A3B32;
+  line-height: 1.2;
+}
+
+/* Rules / Instructions Bar (Dark Maroon 3 Columns) */
+.pass-rules-bar {
+  background: #480913;
+  padding: 12px 8px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.2fr;
+  text-align: center;
+  color: #FFF0D4;
+}
+
+.pass-rule-col {
+  position: relative;
+  padding: 0 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pass-rule-col:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 10%;
+  height: 80%;
+  width: 1px;
+  background: rgba(248, 216, 130, 0.25);
+}
+
+.pass-rule-icon {
+  font-size: 14px;
+  color: #F8D882;
+  margin-bottom: 4px;
+}
+
+.pass-rule-text {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.25;
+  text-transform: uppercase;
+  color: #FFE6BA;
+}
+
+/* Bottom Dark Midnight Footer */
+.pass-bottom-footer {
+  background: #0A0D1E;
+  padding: 9px 12px 11px 12px;
+  text-align: center;
+  border-bottom-left-radius: 26px;
+  border-bottom-right-radius: 26px;
+}
+
+.pass-footer-stars {
+  color: #F8D882;
+  font-size: 8px;
+  letter-spacing: 0.8em;
+  margin-bottom: 4px;
+}
+
+.pass-footer-rights {
+  color: #E2CA8B;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   TRANSITION ANIMATIONS: FORM <-> PASS
+   ========================================================================== */
+.view-section {
+  width: 100%;
+  max-width: 440px;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.view-hidden {
+  display: none !important;
+  opacity: 0;
+  transform: translateY(20px) scale(0.96);
+}
+
+.view-active {
+  display: block !important;
+  animation: viewFadeIn 0.55s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
+}
+
+@keyframes viewFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Mobile pass shine tilt */
+.ticket-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 26px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.05) 40%,
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Floating Action Bars for Mobile */
+.mobile-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 18px;
+  border-radius: 16px;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.mobile-action-btn:active {
+  transform: scale(0.97);
+}
+
+/* Pulsing audio indicator */
+.audio-pulse {
+  animation: musicBeat 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes musicBeat {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.18); filter: drop-shadow(0 0 8px #FFD700); }
+}
+
+/* Custom Scrollbar for Drawer */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(10, 12, 30, 0.4);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(242, 194, 73, 0.4);
+  border-radius: 999px;
+}
