@@ -351,30 +351,35 @@ body {
 .pass-perspective-wrapper {
   perspective: 1200px;
   width: 100%;
-  max-width: 440px;
+  max-width: 420px;
   margin: 0 auto;
 }
 
 .pass-ticket-card {
   width: 100%;
-  background: var(--color-ivory-pass);
-  border-radius: 26px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7),
+  max-width: 420px;
+  margin: 0 auto;
+  background-color: #FAF5EA;
+  border-radius: 24px;
+  border: 1.5px solid #E8D7BE;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7),
               0 0 35px rgba(242, 194, 73, 0.25);
   overflow: hidden;
   position: relative;
   transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-style: preserve-3d;
   color: #2D080E;
+  font-family: var(--font-body);
+  box-sizing: border-box;
 }
 
 /* Top Dark Maroon Header */
 .pass-top-header {
-  background: #480913;
-  padding: 12px 16px 8px 16px;
+  background-color: #480913;
+  padding: 10px 14px 8px 14px;
   text-align: center;
-  border-top-left-radius: 26px;
-  border-top-right-radius: 26px;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
 }
 
 .pass-header-badge {
@@ -384,215 +389,254 @@ body {
   font-weight: 700;
   letter-spacing: 0.28em;
   text-transform: uppercase;
+  display: block;
 }
 
 /* Golden Ribbon Band */
 .pass-gold-ribbon {
   background: linear-gradient(135deg, #F3D273 0%, #FFEBA3 30%, #E3AC3B 70%, #F5CE66 100%);
-  padding: 12px 14px 10px 14px;
+  padding: 11px 12px 9px 12px;
   text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.6);
+  border-bottom: 1px solid rgba(150, 95, 10, 0.35);
   box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.6),
-              inset 0 -2px 4px rgba(150, 95, 10, 0.3),
-              0 4px 10px rgba(72, 9, 19, 0.2);
+              inset 0 -2px 4px rgba(150, 95, 10, 0.3);
 }
 
 .pass-ribbon-title {
-  font-family: var(--font-pass-title);
-  font-size: 27px;
+  font-family: var(--font-festive-title);
+  font-size: 26px;
   line-height: 1.1;
-  font-weight: 800;
-  color: #4D0914;
-  letter-spacing: 0.04em;
+  font-weight: 900;
+  color: #480913;
+  letter-spacing: 0.05em;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .pass-ribbon-subtitle {
   font-family: var(--font-serif);
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
-  color: #4D0914;
+  color: #480913;
   letter-spacing: 0.24em;
   margin-top: 2px;
+  text-transform: uppercase;
 }
 
 /* Pass Middle Content */
 .pass-body-container {
-  padding: 18px 16px 14px 16px;
+  padding: 12px 10px 8px 10px;
   background-color: #FAF5EA;
-  background-image: radial-gradient(#E8D5B5 0.75px, transparent 0.75px);
-  background-size: 16px 16px;
-  position: relative;
+  box-sizing: border-box;
+}
+
+.pass-middle-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.pass-middle-left-td {
+  width: 58%;
+  vertical-align: middle;
+  padding-right: 5px;
+  box-sizing: border-box;
+}
+
+.pass-middle-right-td {
+  width: 42%;
+  vertical-align: middle;
+  padding-left: 5px;
+  box-sizing: border-box;
 }
 
 /* Left Pill Cards */
 .pass-info-pill {
-  background: #FFFFFF;
-  border: 1.2px solid #EADBCE;
-  border-radius: 16px;
-  padding: 11px 13px;
-  box-shadow: 0 3px 8px rgba(120, 60, 30, 0.06);
+  background-color: #FFFFFF;
+  border: 1.2px solid #EADECE;
+  border-radius: 13px;
+  padding: 7px 9px;
+  margin-bottom: 7px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 11px;
-  overflow: visible !important;
+  gap: 8px;
+  box-sizing: border-box;
+  box-shadow: 0 2px 6px rgba(120, 60, 30, 0.05);
+}
+
+.pass-info-pill-last {
+  margin-bottom: 0;
 }
 
 .pass-pill-icon-circle {
-  width: 38px;
-  height: 38px;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
   border-radius: 50%;
-  background: #F8EFE3;
+  background-color: #F8EFE3;
+  border: 1px solid #E6D2BA;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #65111E;
-  font-size: 16px;
+  font-size: 12px;
   flex-shrink: 0;
-  border: 1px solid #E6D2BA;
+}
+
+.pass-pill-text-box {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .pass-pill-label {
   font-family: var(--font-serif);
-  font-size: 9.5px;
+  font-size: 8.5px;
   font-weight: 700;
   color: #65111E;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   line-height: 1.1;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .pass-pill-value {
   font-family: var(--font-serif);
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 800;
   color: #1A0D08;
-  line-height: 1.35;
-  margin-top: 1px;
-  word-break: break-word;
-  overflow: visible !important;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pass-id-highlight {
-  color: #8C1423;
-  font-family: var(--font-serif);
-  font-size: 16px;
+  color: #8C1423 !important;
+  font-size: 13.5px;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
 }
 
 /* Right QR Card */
 .pass-qr-card {
-  background: #FFFFFF;
-  border: 1.2px solid #EADBCE;
-  border-radius: 20px;
-  padding: 12px 10px 10px 10px;
-  box-shadow: 0 4px 12px rgba(120, 60, 30, 0.07);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  background-color: #FFFFFF;
+  border: 1.2px solid #E5D6C0;
+  border-radius: 16px;
+  padding: 8px 6px 7px 6px;
+  box-shadow: 0 3px 10px rgba(120, 60, 30, 0.06);
   text-align: center;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .qr-code-wrapper {
-  background: #FFFFFF;
-  padding: 6px;
-  border-radius: 12px;
+  background-color: #FFFFFF;
+  padding: 2px;
   display: inline-block;
+  margin: 0 auto;
 }
 
-.qr-code-wrapper img, .qr-code-wrapper canvas {
-  display: block;
-  width: 110px !important;
-  height: 110px !important;
+.qr-code-wrapper img,
+.qr-code-wrapper canvas {
+  display: block !important;
+  width: 112px !important;
+  height: 112px !important;
   margin: 0 auto;
 }
 
 .pass-scan-badge {
-  background: #0D1127;
+  background-color: #0D1127;
   color: #F8D882;
   font-family: var(--font-serif);
-  font-size: 9.5px;
+  font-size: 8.5px;
   font-weight: 800;
-  letter-spacing: 0.16em;
-  padding: 5px 12px;
+  letter-spacing: 0.15em;
+  padding: 3.5px 6px;
   border-radius: 999px;
-  margin-top: 8px;
+  margin-top: 5px;
   width: 100%;
+  box-sizing: border-box;
   text-transform: uppercase;
+  display: block;
 }
 
 .pass-qr-subtext {
-  font-size: 8px;
+  font-family: var(--font-body);
+  font-size: 7px;
   font-weight: 700;
   color: #5D4037;
-  letter-spacing: 0.08em;
-  line-height: 1.35;
-  margin-top: 6px;
+  letter-spacing: 0.06em;
+  line-height: 1.25;
+  margin-top: 4px;
   text-transform: uppercase;
 }
 
-/* Perforated Divider with Center Star (Smooth edges matching template) */
+/* Perforated Divider with Center Star */
 .pass-perforated-row {
   position: relative;
   width: 100%;
-  height: 26px;
-  background: #FAF5EA;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 22px;
+  background-color: #FAF5EA;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .perforated-dashed-line {
   position: absolute;
-  left: 18px;
-  right: 18px;
-  top: 50%;
+  left: 14px;
+  right: 14px;
+  top: 10px;
   border-top: 1.8px dashed #D6B98D;
 }
 
 .perforated-star-badge {
-  position: relative;
-  z-index: 5;
-  width: 24px;
-  height: 24px;
-  background: #FAF5EA;
+  position: absolute;
+  left: 50%;
+  top: 11px;
+  transform: translate(-50%, -50%);
+  width: 22px;
+  height: 22px;
+  background-color: #FAF5EA;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #C69234;
   font-size: 13px;
+  line-height: 22px;
+  text-align: center;
+  z-index: 5;
 }
 
 /* Event Details Bar (Gold Tinted 3 Columns) */
-.pass-event-details-bar {
-  background: #F3EBD8;
+.pass-event-wrapper {
+  margin: 2px 10px 8px 10px;
+  background-color: #F3EBD8;
   border: 1.2px solid #E4D5B9;
-  border-radius: 16px;
-  padding: 10px 6px;
-  margin: 4px 16px 12px 16px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  text-align: center;
+  border-radius: 14px;
+  padding: 7px 4px;
+  box-sizing: border-box;
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
-.event-detail-item {
-  position: relative;
-  padding: 0 4px;
+.pass-event-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 
-.event-detail-item:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 15%;
-  height: 70%;
-  width: 1px;
-  background: #D8C6A5;
+.event-detail-td {
+  width: 33.33%;
+  text-align: center;
+  vertical-align: middle;
+  padding: 2px 4px;
+  border-right: 1px solid #D8C6A5;
+  box-sizing: border-box;
+}
+
+.event-detail-td-last {
+  border-right: none;
 }
 
 .event-detail-icon {
@@ -602,7 +646,8 @@ body {
 }
 
 .event-detail-title {
-  font-size: 11px;
+  font-family: var(--font-serif);
+  font-size: 10.5px;
   font-weight: 800;
   color: #3B040B;
   letter-spacing: 0.04em;
@@ -611,77 +656,94 @@ body {
 }
 
 .event-detail-subtitle {
-  font-size: 10.5px;
-  font-weight: 500;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
   color: #4A3B32;
   line-height: 1.2;
 }
 
-/* Rules / Instructions Bar (Dark Maroon 3 Columns) */
-.pass-rules-bar {
-  background: #480913;
-  padding: 12px 8px;
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1.2fr;
+/* Organised by Strip */
+.pass-organised-strip {
+  background-color: #380710;
+  border-top: 1px solid rgba(248, 216, 130, 0.35);
+  border-bottom: 1px solid rgba(248, 216, 130, 0.35);
+  padding: 6px 10px;
   text-align: center;
-  color: #FFF0D4;
+  color: #F8D882;
+  font-family: var(--font-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  box-sizing: border-box;
 }
 
-.pass-rule-col {
-  position: relative;
-  padding: 0 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* Rules / Instructions Bar (Dark Maroon 3 Columns) */
+.pass-rules-wrapper {
+  background-color: #480913;
+  padding: 9px 4px 11px 4px;
+  box-sizing: border-box;
 }
 
-.pass-rule-col:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 10%;
-  height: 80%;
-  width: 1px;
-  background: rgba(248, 216, 130, 0.25);
+.pass-rules-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background-color: #480913;
+}
+
+.pass-rule-td {
+  width: 33.33%;
+  text-align: center;
+  vertical-align: middle;
+  padding: 2px 4px;
+  border-right: 1px solid rgba(248, 216, 130, 0.25);
+  box-sizing: border-box;
+}
+
+.pass-rule-td-last {
+  border-right: none;
 }
 
 .pass-rule-icon {
-  font-size: 14px;
+  font-size: 13px;
   color: #F8D882;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .pass-rule-text {
-  font-size: 8px;
+  font-family: var(--font-serif);
+  font-size: 7.5px;
   font-weight: 700;
   letter-spacing: 0.05em;
   line-height: 1.25;
   text-transform: uppercase;
-  color: #FFE6BA;
+  color: #FFF0D4;
 }
 
 /* Bottom Dark Midnight Footer */
 .pass-bottom-footer {
-  background: #0A0D1E;
-  padding: 9px 12px 11px 12px;
+  background-color: #0A0D1E;
+  padding: 8px 10px 10px 10px;
   text-align: center;
-  border-bottom-left-radius: 26px;
-  border-bottom-right-radius: 26px;
+  border-bottom-left-radius: 22px;
+  border-bottom-right-radius: 22px;
+  box-sizing: border-box;
 }
 
 .pass-footer-stars {
   color: #F8D882;
   font-size: 8px;
   letter-spacing: 0.8em;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .pass-footer-rights {
   color: #E2CA8B;
+  font-family: var(--font-body);
   font-size: 7.5px;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 

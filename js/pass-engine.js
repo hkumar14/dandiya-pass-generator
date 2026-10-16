@@ -153,8 +153,8 @@ class PassEngine {
 
     new QRCode(container, {
       text: encodedData,
-      width: 140,
-      height: 140,
+      width: 112,
+      height: 112,
       colorDark: '#120508',
       colorLight: '#FFFFFF',
       correctLevel: QRCode.CorrectLevel.H
@@ -174,10 +174,9 @@ class PassEngine {
     const nameEl = document.getElementById('pass-display-name');
     const courseEl = document.getElementById('pass-display-course');
     const idEl = document.getElementById('pass-display-id');
-    const syncStatusEl = document.getElementById('pass-sync-status');
 
     if (nameEl) nameEl.textContent = data.full_name || 'STUDENT NAME';
-    if (courseEl) courseEl.textContent = data.year_course || 'YEAR / COURSE';
+    if (courseEl) courseEl.textContent = data.year_course || 'Intern / Outsider';
     if (idEl) idEl.textContent = data.pass_id || 'DN-XXXXXX';
 
     // QR Code data: Include verification URL + student info
@@ -212,13 +211,29 @@ class PassEngine {
     passCard.style.transform = 'none';
 
     try {
+      // Ensure web fonts are completely loaded before capturing canvas
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
+
       // High-res html2canvas capture (scale 3 for ultra-crisp print quality)
       const canvas = await html2canvas(passCard, {
         scale: 3,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#FAF5EA',
-        logging: false
+        logging: false,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: 440,
+        onclone: (clonedDoc) => {
+          const card = clonedDoc.getElementById('digital-pass-card');
+          if (card) {
+            card.style.width = '420px';
+            card.style.maxWidth = '420px';
+            card.style.transform = 'none';
+          }
+        }
       });
 
       const imgData = canvas.toDataURL('image/jpeg', 0.98);
@@ -229,15 +244,18 @@ class PassEngine {
         throw new Error('jsPDF library not loaded');
       }
 
-      // jsPDF setup (Mobile ticket dimensions: 108mm x 165mm)
+      // Dynamically preserve exact aspect ratio of ticket in PDF
+      const pdfWidth = 108; // mm
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
       const pdf = new jsPDFConstructor({
         orientation: 'portrait',
         unit: 'mm',
-        format: [108, 165]
+        format: [pdfWidth, pdfHeight]
       });
 
       // Fit image onto PDF page
-      pdf.addImage(imgData, 'JPEG', 0, 0, 108, 165);
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
 
       const passId = (this.currentPassData && this.currentPassData.pass_id) ? this.currentPassData.pass_id : 'DN-PASS';
       pdf.save(`Dandiya_Night_Pass_${passId}.pdf`);
@@ -273,12 +291,28 @@ class PassEngine {
     passCard.style.transform = 'none';
 
     try {
+      // Ensure web fonts are completely loaded before capturing canvas
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
+
       const canvas = await html2canvas(passCard, {
         scale: 3,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#FAF5EA',
-        logging: false
+        logging: false,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: 440,
+        onclone: (clonedDoc) => {
+          const card = clonedDoc.getElementById('digital-pass-card');
+          if (card) {
+            card.style.width = '420px';
+            card.style.maxWidth = '420px';
+            card.style.transform = 'none';
+          }
+        }
       });
 
       const image = canvas.toDataURL('image/png');
