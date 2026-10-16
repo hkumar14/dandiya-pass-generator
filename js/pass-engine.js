@@ -142,23 +142,50 @@ class PassEngine {
     }, 250);
   }
 
-  // Generate QR Code with high crispness
-  generateQRCode(containerId, qrPayload) {
+  // Generate QR Code with high crispness and instant verification URL
+  generateQRCode(containerId, passData) {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
 
-    // Encode verification data string
-    const encodedData = typeof qrPayload === 'string' ? qrPayload : JSON.stringify(qrPayload);
+    const passId = (passData && typeof passData === 'object') ? (passData.pass_id || 'DN-PASS') : String(passData || 'DN-PASS');
+    const baseUrl = (window.location.origin && window.location.origin !== 'null' && !window.location.origin.startsWith('file:'))
+      ? window.location.origin
+      : 'https://dandiya-pass-generator.vercel.app';
+    const verificationUrl = `${baseUrl}/pass.html?pass_id=${encodeURIComponent(passId)}`;
 
+    // Generate QR using QRCode.js
     new QRCode(container, {
-      text: encodedData,
-      width: 112,
-      height: 112,
+      text: verificationUrl,
+      width: 120,
+      height: 120,
       colorDark: '#120508',
       colorLight: '#FFFFFF',
-      correctLevel: QRCode.CorrectLevel.H
+      correctLevel: QRCode.CorrectLevel.M
     });
+
+    // QRCode.js creates both a <canvas> and a hidden <img>.
+    // Convert to a single permanent <img> with base64 dataURL so html2canvas renders it 100% reliably
+    const convertToImage = () => {
+      const canvas = container.querySelector('canvas');
+      if (canvas) {
+        try {
+          const dataUrl = canvas.toDataURL('image/png');
+          if (dataUrl && dataUrl.length > 50) {
+            container.innerHTML = `<img id="pass-qr-image" src="${dataUrl}" alt="Entry Gate Pass QR Code" style="display: block; width: 110px; height: 110px; margin: 0 auto; border-radius: 6px; image-rendering: pixelated;" />`;
+            return true;
+          }
+        } catch (e) {
+          console.warn('Canvas export warning:', e);
+        }
+      }
+      return false;
+    };
+
+    if (!convertToImage()) {
+      setTimeout(convertToImage, 40);
+      setTimeout(convertToImage, 120);
+    }
   }
 
   // Alias for renderPass
@@ -179,18 +206,8 @@ class PassEngine {
     if (courseEl) courseEl.textContent = data.year_course || 'Intern / Outsider';
     if (idEl) idEl.textContent = data.pass_id || 'DN-XXXXXX';
 
-    // QR Code data: Include verification URL + student info
-    const verificationPayload = {
-      event: 'Dandiya Night 2026',
-      pass_id: data.pass_id,
-      name: data.full_name,
-      course: data.year_course,
-      date: '19-OCT-2026',
-      venue: 'College Ground',
-      valid: true
-    };
-
-    this.generateQRCode('pass-qr-code-element', verificationPayload);
+    // Encode live pass verification URL in the QR Code
+    this.generateQRCode('pass-qr-code-element', data);
   }
 
   // Export Pass as High Resolution PDF
@@ -232,6 +249,12 @@ class PassEngine {
             card.style.width = '420px';
             card.style.maxWidth = '420px';
             card.style.transform = 'none';
+          }
+          // Guarantee the QR code image is visible and cloned with dataURL
+          const origImg = passCard.querySelector('#pass-qr-image') || passCard.querySelector('#pass-qr-code-element img');
+          const clonedQr = clonedDoc.querySelector('#pass-qr-code-element');
+          if (origImg && clonedQr && origImg.src) {
+            clonedQr.innerHTML = `<img src="${origImg.src}" alt="QR" style="display: block; width: 110px; height: 110px; margin: 0 auto; border-radius: 6px;" />`;
           }
         }
       });
@@ -311,6 +334,12 @@ class PassEngine {
             card.style.width = '420px';
             card.style.maxWidth = '420px';
             card.style.transform = 'none';
+          }
+          // Guarantee the QR code image is visible and cloned with dataURL
+          const origImg = passCard.querySelector('#pass-qr-image') || passCard.querySelector('#pass-qr-code-element img');
+          const clonedQr = clonedDoc.querySelector('#pass-qr-code-element');
+          if (origImg && clonedQr && origImg.src) {
+            clonedQr.innerHTML = `<img src="${origImg.src}" alt="QR" style="display: block; width: 110px; height: 110px; margin: 0 auto; border-radius: 6px;" />`;
           }
         }
       });

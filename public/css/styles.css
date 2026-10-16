@@ -454,14 +454,15 @@ body {
 .pass-info-pill {
   background-color: #FFFFFF;
   border: 1.2px solid #EADECE;
-  border-radius: 13px;
-  padding: 7px 9px;
-  margin-bottom: 7px;
+  border-radius: 12px;
+  padding: 6px 9px 7px 9px;
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
   gap: 8px;
   box-sizing: border-box;
   box-shadow: 0 2px 6px rgba(120, 60, 30, 0.05);
+  overflow: visible !important;
 }
 
 .pass-info-pill-last {
@@ -469,9 +470,9 @@ body {
 }
 
 .pass-pill-icon-circle {
-  width: 30px;
-  height: 30px;
-  min-width: 30px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
   border-radius: 50%;
   background-color: #F8EFE3;
   border: 1px solid #E6D2BA;
@@ -479,43 +480,48 @@ body {
   align-items: center;
   justify-content: center;
   color: #65111E;
-  font-size: 12px;
+  font-size: 11px;
   flex-shrink: 0;
 }
 
 .pass-pill-text-box {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible !important;
 }
 
 .pass-pill-label {
   font-family: var(--font-serif);
-  font-size: 8.5px;
+  font-size: 8px;
   font-weight: 700;
   color: #65111E;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   line-height: 1.1;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
 }
 
 .pass-pill-value {
-  font-family: var(--font-serif);
-  font-size: 13px;
+  font-family: 'Marcellus', 'Cinzel', Georgia, serif;
+  font-size: 13.5px;
   font-weight: 800;
   color: #1A0D08;
-  line-height: 1.25;
+  line-height: 1.35;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible !important;
+  display: block;
+  padding-bottom: 2px;
 }
 
 .pass-id-highlight {
   color: #8C1423 !important;
-  font-size: 13.5px;
+  font-family: 'Cinzel', monospace, serif;
+  font-size: 14px;
   font-weight: 900;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+  line-height: 1.35;
+  padding-bottom: 2px;
+  overflow: visible !important;
 }
 
 /* Right QR Card */
@@ -532,17 +538,28 @@ body {
 
 .qr-code-wrapper {
   background-color: #FFFFFF;
-  padding: 2px;
-  display: inline-block;
+  padding: 0;
   margin: 0 auto;
+  display: block;
 }
 
-.qr-code-wrapper img,
-.qr-code-wrapper canvas {
-  display: block !important;
-  width: 112px !important;
-  height: 112px !important;
+#pass-qr-code-element {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  height: 110px;
+  min-height: 110px;
   margin: 0 auto;
+  overflow: hidden;
+}
+
+#pass-qr-code-element img {
+  display: block !important;
+  width: 110px !important;
+  height: 110px !important;
+  margin: 0 auto;
+  border-radius: 6px;
 }
 
 .pass-scan-badge {
@@ -552,9 +569,9 @@ body {
   font-size: 8.5px;
   font-weight: 800;
   letter-spacing: 0.15em;
-  padding: 3.5px 6px;
+  padding: 4px 6px;
   border-radius: 999px;
-  margin-top: 5px;
+  margin-top: 6px;
   width: 100%;
   box-sizing: border-box;
   text-transform: uppercase;
@@ -563,11 +580,11 @@ body {
 
 .pass-qr-subtext {
   font-family: var(--font-body);
-  font-size: 7px;
+  font-size: 7.5px;
   font-weight: 700;
   color: #5D4037;
   letter-spacing: 0.06em;
-  line-height: 1.25;
+  line-height: 1.3;
   margin-top: 4px;
   text-transform: uppercase;
 }
