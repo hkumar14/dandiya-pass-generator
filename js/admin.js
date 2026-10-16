@@ -581,11 +581,15 @@ class AdminManager {
     tbody.innerHTML = list.map(r => `
       <tr class="border-b border-amber-900/30 hover:bg-amber-950/25 text-xs transition-colors">
         <td class="py-2.5 px-3 font-mono font-bold text-amber-300">
-          <a href="?pass_id=${r.pass_id}" class="underline hover:text-amber-100">${r.pass_id}</a>
+          <a href="/pass.html?pass_id=${encodeURIComponent(r.pass_id)}" target="_blank" class="underline hover:text-amber-100">${r.pass_id}</a>
         </td>
         <td class="py-2.5 px-3 text-slate-100 font-medium">${escapeHtml(r.full_name)}</td>
         <td class="py-2.5 px-3 text-amber-200/80">${escapeHtml(r.year_course)}</td>
-        <td class="py-2.5 px-3 text-slate-300">${escapeHtml(r.phone)}</td>
+        <td class="py-2.5 px-3 text-right">
+          <a href="/pass.html?pass_id=${encodeURIComponent(r.pass_id)}" target="_blank" class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/30 text-amber-300 hover:bg-amber-500 hover:text-slate-950 font-semibold text-[10px] transition-all">
+            <i class="fa-solid fa-ticket text-[9px]"></i> View
+          </a>
+        </td>
       </tr>
     `).join('');
   }

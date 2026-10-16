@@ -24,8 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputName = document.getElementById('input-name');
   const selectYear = document.getElementById('select-year');
   const selectCourse = document.getElementById('select-course');
-  const inputPhone = document.getElementById('input-phone');
-  const inputEmail = document.getElementById('input-email');
 
   // Setup Touch Ripples on Action Buttons
   function createRipple(event, button) {
@@ -97,8 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = inputName.value.trim();
       const year = selectYear ? selectYear.value.trim() : '';
       const course = selectCourse ? selectCourse.value.trim() : '';
-      const phone = inputPhone.value.trim();
-      const email = inputEmail.value.trim();
 
       if (!name) {
         showInputError(inputName, 'Please enter your full name');
@@ -109,15 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       if (!course) {
-        showInputError(selectCourse, 'Please select your Course (BDS / MDS)');
-        return;
-      }
-      if (!phone || phone.length < 10) {
-        showInputError(inputPhone, 'Please enter a valid 10-digit mobile number');
-        return;
-      }
-      if (!email || !email.includes('@')) {
-        showInputError(inputEmail, 'Please enter a valid email address');
+        showInputError(selectCourse, 'Please select your Course (BDS / MDS / Outsider)');
         return;
       }
 
@@ -140,8 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
         pass_id: generatedPassId,
         full_name: name,
         year_course: combinedYearCourse,
-        phone: phone,
-        email: email
+        phone: '',
+        email: ''
       };
 
       setTimeout(() => {

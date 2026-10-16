@@ -33,8 +33,8 @@ module.exports = async (req, res) => {
       pass_id: passId,
       full_name: record.full_name,
       year_course: record.year_course,
-      phone: record.phone,
-      email: record.email,
+      phone: record.phone || '',
+      email: record.email || '',
       pass_url: record.pass_url || '',
       status: 'Active',
       created_at: record.created_at || new Date().toISOString()

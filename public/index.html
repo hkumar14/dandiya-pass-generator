@@ -198,6 +198,13 @@
           <span class="text-amber-500">•</span>
           <span><i class="fa-solid fa-location-dot text-amber-400 mr-1"></i>COLLEGE GROUND</span>
         </div>
+
+        <!-- Organised by (2023 - 2024) -->
+        <div class="mt-2 text-center">
+          <span class="inline-block text-xs sm:text-sm font-serif-royal font-bold tracking-wider text-amber-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+            Organised by (2023 - 2024)
+          </span>
+        </div>
       </div>
 
       <!-- Registration Glass Card -->
@@ -259,7 +266,7 @@
                   <option value="2nd Year">2nd Year</option>
                   <option value="3rd Year">3rd Year</option>
                   <option value="4th Year">4th Year</option>
-                  <option value="5th Year">5th Year</option>
+                  <option value="Inter">Inter</option>
                 </select>
                 <span class="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none text-amber-400/60 text-xs">
                   <i class="fa-solid fa-chevron-down"></i>
@@ -285,54 +292,12 @@
                   <option value="" disabled selected>Select Course</option>
                   <option value="BDS">BDS</option>
                   <option value="MDS">MDS</option>
+                  <option value="Outsider">Outsider</option>
                 </select>
                 <span class="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none text-amber-400/60 text-xs">
                   <i class="fa-solid fa-chevron-down"></i>
                 </span>
               </div>
-            </div>
-          </div>
-
-          <!-- Contact Number -->
-          <div>
-            <label for="input-phone" class="block text-xs font-semibold text-amber-200/90 mb-1 tracking-wide">
-              WHATSAPP / CONTACT NUMBER <span class="text-red-400">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-amber-300/60 text-sm">
-                <i class="fa-solid fa-phone"></i>
-              </span>
-              <input
-                type="tel"
-                id="input-phone"
-                name="phone"
-                required
-                maxlength="14"
-                placeholder="e.g. 9876543210"
-                class="glass-input w-full pl-10 pr-3.5 py-3 rounded-xl text-sm font-medium bg-[#0E0C22] text-amber-100 border border-amber-400/35 placeholder-amber-200/40 focus:ring-2 focus:ring-amber-400 focus:bg-[#151234] focus:outline-none transition-all"
-                autocomplete="tel"
-              >
-            </div>
-          </div>
-
-          <!-- Email Address -->
-          <div>
-            <label for="input-email" class="block text-xs font-semibold text-amber-200/90 mb-1 tracking-wide">
-              EMAIL ADDRESS <span class="text-red-400">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-amber-300/60 text-sm">
-                <i class="fa-regular fa-envelope"></i>
-              </span>
-              <input
-                type="email"
-                id="input-email"
-                name="email"
-                required
-                placeholder="e.g. student@college.edu"
-                class="glass-input w-full pl-10 pr-3.5 py-3 rounded-xl text-sm font-medium bg-[#0E0C22] text-amber-100 border border-amber-400/35 placeholder-amber-200/40 focus:ring-2 focus:ring-amber-400 focus:bg-[#151234] focus:outline-none transition-all"
-                autocomplete="email"
-              >
             </div>
           </div>
 
@@ -549,8 +514,8 @@
               <tr>
                 <th class="py-2 px-3">Pass ID</th>
                 <th class="py-2 px-3">Name</th>
-                <th class="py-2 px-3">Course</th>
-                <th class="py-2 px-3">Phone</th>
+                <th class="py-2 px-3">Year / Course</th>
+                <th class="py-2 px-3 text-right">Pass</th>
               </tr>
             </thead>
             <tbody id="admin-table-tbody">
