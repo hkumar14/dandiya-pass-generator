@@ -427,7 +427,15 @@
 
       const audioBtn = document.getElementById('btn-audio-toggle');
       if (audioBtn && window.festiveAudio) {
-        audioBtn.addEventListener('click', () => window.festiveAudio.toggleMute());
+        audioBtn.addEventListener('click', () => {
+          const playing = window.festiveAudio.toggleMusic();
+          audioBtn.innerHTML = playing
+            ? '<i class="fa-solid fa-music text-amber-400 audio-pulse"></i>'
+            : '<i class="fa-solid fa-volume-xmark text-slate-400"></i>';
+          if (window.passEngine && window.passEngine.showToast) {
+            window.passEngine.showToast(playing ? '🎶 Playing Festive Dandiya Music!' : '🔇 Dandiya Music Paused');
+          }
+        });
       }
 
       // 2. Resolve Pass Data

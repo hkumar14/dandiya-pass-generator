@@ -345,10 +345,10 @@ class AdminManager {
 
             if (error) {
               loginStatusMsg.className = 'text-xs text-amber-300 mt-2 block';
-              loginStatusMsg.textContent = `Note: ${error.message}. You can also sign in instantly using the passcode above.`;
+              loginStatusMsg.textContent = `Note: ${error.message}. You can also sign in instantly using your passcode above.`;
             } else {
               loginStatusMsg.className = 'text-xs text-emerald-300 mt-2 block leading-relaxed';
-              loginStatusMsg.innerHTML = `✉️ Login link sent to <strong>${email}</strong>!<br><span class="text-amber-200 text-[11px]">👉 Click the link in your email to sign in, or enter passcode <strong>dandiya2026</strong> above for instant entry.</span>`;
+              loginStatusMsg.innerHTML = `✉️ Login link sent to <strong>${email}</strong>!<br><span class="text-amber-200 text-[11px]">👉 Click the link in your email to sign in, or enter your organizer passcode above.</span>`;
             }
           } catch (err) {
             loginStatusMsg.className = 'text-xs text-amber-300 mt-2 block';
@@ -357,7 +357,7 @@ class AdminManager {
         } else {
           // Local / Demo Mode when Supabase keys not yet configured
           loginStatusMsg.className = 'text-xs text-emerald-300 mt-2 block leading-relaxed';
-          loginStatusMsg.innerHTML = `✉️ Login link sent to <strong>${email}</strong>!<br><span class="text-amber-200 text-[11px]">👉 Click the link, or enter passcode <strong>dandiya2026</strong> above for instant entry.</span>`;
+          loginStatusMsg.innerHTML = `✉️ Login link sent to <strong>${email}</strong>!<br><span class="text-amber-200 text-[11px]">👉 Click the link in your email to sign in, or enter your organizer passcode above.</span>`;
         }
 
         btnSendOtp.disabled = false;
@@ -379,7 +379,7 @@ class AdminManager {
 
         if (!token) {
           loginStatusMsg.className = 'text-xs text-red-400 mt-2 block';
-          loginStatusMsg.textContent = 'Please enter the organizer passcode (e.g. dandiya2026).';
+          loginStatusMsg.textContent = 'Please enter your organizer passcode.';
           return;
         }
 
@@ -454,7 +454,7 @@ class AdminManager {
           this.showToast('🎉 Welcome back, Organizer!');
         } else {
           loginStatusMsg.className = 'text-xs text-red-400 mt-2 block';
-          loginStatusMsg.textContent = 'Invalid passcode. Please use passcode "dandiya2026" or click the email link.';
+          loginStatusMsg.textContent = 'Invalid credentials. Please verify your passcode or click the email link.';
         }
       });
     }

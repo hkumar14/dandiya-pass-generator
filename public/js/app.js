@@ -56,26 +56,37 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', (e) => createRipple(e, btn));
   });
 
-  // Audio Toggle Button
+  // Audio Toggle Button (Plays / Pauses Festive Dandiya Music Loop)
   if (btnAudioToggle) {
     const updateAudioIcon = () => {
-      const isMuted = window.festiveAudio ? window.festiveAudio.muted : false;
-      btnAudioToggle.innerHTML = isMuted
-        ? '<i class="fa-solid fa-volume-xmark text-slate-400"></i>'
-        : '<i class="fa-solid fa-music text-amber-400 audio-pulse"></i>';
-      btnAudioToggle.title = isMuted ? 'Unmute Festive Music & Sounds' : 'Mute Sounds';
+      const isPlaying = window.festiveAudio && window.festiveAudio.isPlaying;
+      btnAudioToggle.innerHTML = isPlaying
+        ? '<i class="fa-solid fa-music text-amber-400 audio-pulse text-sm"></i>'
+        : '<i class="fa-solid fa-volume-xmark text-slate-400 text-sm"></i>';
+      btnAudioToggle.title = isPlaying ? 'Pause Festive Dandiya Music' : 'Play Festive Dandiya Music';
+      btnAudioToggle.classList.toggle('border-amber-400', isPlaying);
+      btnAudioToggle.classList.toggle('bg-amber-500/20', isPlaying);
     };
     updateAudioIcon();
 
     btnAudioToggle.addEventListener('click', () => {
       if (window.festiveAudio) {
-        window.festiveAudio.toggleMute();
-        if (!window.festiveAudio.muted) {
-          window.festiveAudio.playChime(660, 0.4);
-        }
+        const playing = window.festiveAudio.toggleMusic();
         updateAudioIcon();
+        if (window.passEngine && window.passEngine.showToast) {
+          window.passEngine.showToast(playing ? '🎶 Playing Festive Dandiya Music!' : '🔇 Dandiya Music Paused');
+        }
       }
     });
+
+    // Mobile gesture unlock listener
+    const unlockAudio = () => {
+      if (window.festiveAudio) {
+        window.festiveAudio.resume();
+      }
+    };
+    document.addEventListener('touchstart', unlockAudio, { once: true });
+    document.addEventListener('click', unlockAudio, { once: true });
   }
 
   // If someone lands on index.html with ?pass_id=, redirect directly to pass.html
