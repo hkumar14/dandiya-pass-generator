@@ -203,7 +203,7 @@ class PassEngine {
     const idEl = document.getElementById('pass-display-id');
 
     if (nameEl) nameEl.textContent = data.full_name || 'STUDENT NAME';
-    if (courseEl) courseEl.textContent = data.year_course || 'Intern / Outsider';
+    if (courseEl) courseEl.textContent = data.year_course || 'Intern / Others';
     if (idEl) idEl.textContent = data.pass_id || 'DN-XXXXXX';
 
     // Encode live pass verification URL in the QR Code

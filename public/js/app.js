@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       if (!course) {
-        showInputError(selectCourse, 'Please select your Course (BDS / MDS / Outsider)');
+        showInputError(selectCourse, 'Please select your Course (BDS / MDS / Others)');
         return;
       }
 
