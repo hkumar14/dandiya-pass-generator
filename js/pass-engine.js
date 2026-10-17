@@ -376,7 +376,7 @@ class PassEngine {
 
     const shareData = {
       title: 'Dandiya Night 2026 - Digital Entry Pass',
-      text: `🎉 Here is my verified Digital Entry Pass for Dandiya Night 2026!\nStudent: ${name}\nPass ID: ${passId}\nDate: 19 October 2026\nVenue: College Ground`,
+      text: `🎉 Here is my verified Digital Entry Pass for Dandiya Night 2026!\nStudent: ${name}\nPass ID: ${passId}\nDate: 20 October 2026\nVenue: College Ground`,
       url: shareUrl
     };
 
