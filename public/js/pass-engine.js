@@ -281,7 +281,7 @@ class PassEngine {
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
 
       const passId = (this.currentPassData && this.currentPassData.pass_id) ? this.currentPassData.pass_id : 'DN-PASS';
-      pdf.save(`Dandiya_Night_Pass_${passId}.pdf`);
+      pdf.save(`Dussehra_Night_Pass_${passId}.pdf`);
 
       // Toast notification
       this.showToast('🎉 Digital Pass PDF downloaded successfully!');
@@ -348,7 +348,7 @@ class PassEngine {
       const passId = (this.currentPassData && this.currentPassData.pass_id) ? this.currentPassData.pass_id : 'DN-PASS';
 
       const link = document.createElement('a');
-      link.download = `Dandiya_Night_Pass_${passId}.png`;
+      link.download = `Dussehra_Night_Pass_${passId}.png`;
       link.href = image;
       document.body.appendChild(link);
       link.click();
@@ -375,8 +375,8 @@ class PassEngine {
     const shareUrl = `${window.location.origin}${window.location.pathname}?pass_id=${passId}`;
 
     const shareData = {
-      title: 'Dandiya Night 2026 - Digital Entry Pass',
-      text: `🎉 Here is my verified Digital Entry Pass for Dandiya Night 2026!\nStudent: ${name}\nPass ID: ${passId}\nDate: 20 October 2026\nVenue: College Ground`,
+      title: 'Dussehra Night 2026 - Digital Entry Pass',
+      text: `🎉 Here is my verified Digital Entry Pass for Dussehra Night 2026!\nStudent: ${name}\nPass ID: ${passId}\nDate: 20 October 2026\nVenue: College Ground`,
       url: shareUrl
     };
 
