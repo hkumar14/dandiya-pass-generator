@@ -19,14 +19,23 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
+  // Edge cache: responds in milliseconds via Vercel Edge network
+  res.setHeader('Cache-Control', 's-maxage=2, stale-while-revalidate=15');
+
   try {
-    // 1. Fetch from Supabase if configured
+    // 1. Fetch from Supabase if configured (with 3.5s timeout protection)
     if (isConfigured && supabase) {
       try {
-        const { data, error } = await supabase
+        const queryPromise = supabase
           .from('dandiya_registrations')
           .select('*')
           .order('created_at', { ascending: false });
+
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Supabase query timeout')), 3500)
+        );
+
+        const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
 
         if (!error && data) {
           return res.status(200).json(data);

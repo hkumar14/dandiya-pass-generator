@@ -143,6 +143,8 @@ class AdminManager {
       sessionStorage.setItem('dandiya_admin_email', clean);
       this.renderAdminHeader();
       this.refreshRegistrationsCount();
+      // Proactively pre-fetch registrations in background so they are ready instantly!
+      this.loadAllRegistrations(false);
     } else {
       this.showToast('⚠️ Access restricted. Only event organizers may enter.');
       this.logout();
@@ -184,7 +186,9 @@ class AdminManager {
   logout() {
     this.currentAdminEmail = null;
     this.isAdminLoggedIn = false;
+    this.registrations = [];
     sessionStorage.removeItem('dandiya_admin_email');
+    sessionStorage.removeItem('dandiya_admin_cached_registrations');
     if (this.supabaseClient) {
       this.supabaseClient.auth.signOut().catch(() => {});
     }
@@ -205,18 +209,76 @@ class AdminManager {
     } catch (e) {}
   }
 
-  // Fetch full registrations for table
-  async loadAllRegistrations() {
-    try {
+  // High-performance loader with client-side cache & direct Supabase / Edge API fetch
+  async loadAllRegistrations(forceFresh = false) {
+    // 1. If not forcing fresh and we already have data in memory, return immediately
+    if (!forceFresh && this.registrations && this.registrations.length > 0) {
+      return this.registrations;
+    }
+
+    // 2. Read from sessionStorage cache if available (instant 0ms response)
+    if (!this.registrations || this.registrations.length === 0) {
+      try {
+        const cachedRaw = sessionStorage.getItem('dandiya_admin_cached_registrations');
+        if (cachedRaw) {
+          const parsed = JSON.parse(cachedRaw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            this.registrations = parsed;
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 3. Fast Fetch: Try direct client-side Supabase query first (zero Vercel cold-start!) or Edge API
+    const fetchDirectSupabase = async () => {
+      if (!this.supabaseClient) throw new Error('No client');
+      const { data, error } = await this.supabaseClient
+        .from('dandiya_registrations')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error || !data) throw error || new Error('No data');
+      return data;
+    };
+
+    const fetchViaApi = async () => {
       const res = await fetch('/api/registrations');
-      if (res.ok) {
-        this.registrations = await res.json();
+      if (!res.ok) throw new Error('API failed');
+      return await res.json();
+    };
+
+    try {
+      let data = null;
+      if (this.supabaseClient) {
+        try {
+          data = await Promise.race([
+            fetchDirectSupabase(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase client timeout')), 2800))
+          ]);
+        } catch (err) {
+          data = await fetchViaApi();
+        }
+      } else {
+        data = await fetchViaApi();
+      }
+
+      if (Array.isArray(data)) {
+        this.registrations = data;
+        try {
+          sessionStorage.setItem('dandiya_admin_cached_registrations', JSON.stringify(data));
+        } catch (e) {}
+
+        // Update counters in UI
+        const countEl = document.getElementById('admin-count-display');
+        if (countEl) countEl.textContent = data.length;
+        const modalTotalCount = document.getElementById('modal-total-count');
+        if (modalTotalCount) modalTotalCount.textContent = data.length;
+
         return this.registrations;
       }
     } catch (e) {
       console.warn('Failed to load registrations:', e);
     }
-    return [];
+    return this.registrations || [];
   }
 
   // Export registrations as CSV
@@ -477,11 +539,33 @@ class AdminManager {
     if (btnViewRegistrations) {
       btnViewRegistrations.addEventListener('click', async () => {
         adminDrawerModal.classList.remove('hidden');
-        if (adminTbody) {
-          adminTbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-amber-300 text-xs"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Loading registrations...</td></tr>`;
+
+        // Instant render from memory or sessionStorage cache (0ms delay)
+        let cached = this.registrations;
+        if (!cached || cached.length === 0) {
+          try {
+            const raw = sessionStorage.getItem('dandiya_admin_cached_registrations');
+            if (raw) cached = JSON.parse(raw);
+          } catch (e) {}
         }
-        await this.loadAllRegistrations();
-        this.renderRegistrationsTable(this.registrations);
+
+        if (cached && cached.length > 0) {
+          this.registrations = cached;
+          this.renderRegistrationsTable(cached);
+
+          // Silent background refresh for new signups
+          this.loadAllRegistrations(true).then((fresh) => {
+            if (fresh && fresh.length > 0) {
+              this.renderRegistrationsTable(fresh);
+            }
+          });
+        } else {
+          if (adminTbody) {
+            adminTbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-amber-300 text-xs"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Loading registrations...</td></tr>`;
+          }
+          const list = await this.loadAllRegistrations(true);
+          this.renderRegistrationsTable(list);
+        }
       });
     }
 
@@ -509,7 +593,9 @@ class AdminManager {
     }
     if (btnTopExportCsv) {
       btnTopExportCsv.addEventListener('click', async () => {
-        await this.loadAllRegistrations();
+        if (!this.registrations || this.registrations.length === 0) {
+          await this.loadAllRegistrations();
+        }
         this.exportCSV();
       });
     }

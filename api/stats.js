@@ -15,12 +15,21 @@ module.exports = async (req, res) => {
     return res.status(204).end();
   }
 
+  // Edge cache for instant stats badge updates
+  res.setHeader('Cache-Control', 's-maxage=2, stale-while-revalidate=15');
+
   try {
     if (isConfigured && supabase) {
       try {
-        const { count, error } = await supabase
+        const countPromise = supabase
           .from('dandiya_registrations')
           .select('*', { count: 'exact', head: true });
+
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Supabase count timeout')), 3500)
+        );
+
+        const { count, error } = await Promise.race([countPromise, timeoutPromise]);
 
         if (!error && count !== null) {
           return res.status(200).json({ count });
