@@ -186,10 +186,8 @@ body {
 }
 
 .text-gold-gradient {
-  background: linear-gradient(180deg, #FFFFFF 0%, #FFF875 18%, #FFD700 48%, #FFB700 78%, #FF9900 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 16px rgba(255, 215, 0, 0.7));
+  color: #FDE68A;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
 }
 
 .text-gold-ribbon {
