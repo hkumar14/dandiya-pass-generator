@@ -145,10 +145,27 @@ class AdminManager {
       this.refreshRegistrationsCount();
       // Proactively pre-fetch registrations in background so they are ready instantly!
       this.loadAllRegistrations(false);
+
+      // Record admin login event to backend (captures timestamp & IP address privately)
+      this.logAdminLogin(clean);
     } else {
       this.showToast('⚠️ Access restricted. Only event organizers may enter.');
       this.logout();
     }
+  }
+
+  logAdminLogin(email) {
+    try {
+      const sessionKey = `dandiya_admin_logged_${email}`;
+      if (sessionStorage.getItem(sessionKey)) return;
+      sessionStorage.setItem(sessionKey, '1');
+
+      fetch('/api/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+      }).catch(() => {});
+    } catch (e) {}
   }
 
   // Render Top Header in Admin Mode
@@ -184,6 +201,9 @@ class AdminManager {
   }
 
   logout() {
+    if (this.currentAdminEmail) {
+      sessionStorage.removeItem(`dandiya_admin_logged_${this.currentAdminEmail}`);
+    }
     this.currentAdminEmail = null;
     this.isAdminLoggedIn = false;
     this.registrations = [];

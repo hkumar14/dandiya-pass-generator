@@ -227,6 +227,32 @@ WITH CHECK (true);
 
 -- NOTE: No SELECT policy is created for public/anon!
 -- Only the project owner inside Supabase Dashboard can view the data.
+
+-- ==========================================
+-- Add ip_address column to dandiya_registrations
+-- ==========================================
+ALTER TABLE dandiya_registrations ADD COLUMN IF NOT EXISTS ip_address VARCHAR(100);
+
+-- ==========================================
+-- Admin Login Events Table (One-Way Private Logging)
+-- ==========================================
+CREATE TABLE IF NOT EXISTS admin_logins (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    ip_address VARCHAR(100) NOT NULL,
+    role VARCHAR(50) DEFAULT 'admin',
+    user_agent TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+ALTER TABLE admin_logins ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "admin_logins_insert_only" ON admin_logins;
+CREATE POLICY "admin_logins_insert_only" 
+ON admin_logins 
+FOR INSERT 
+TO public 
+WITH CHECK (true);
 `;
   }
 }

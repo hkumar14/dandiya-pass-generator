@@ -14,6 +14,7 @@ const adminsApi = require('./api/admins');
 const statsApi = require('./api/stats');
 const configApi = require('./api/config');
 const trackVisitApi = require('./api/track-visit');
+const adminLoginApi = require('./api/admin-login');
 
 const PORT = process.env.PORT || 8080;
 const ROOT = __dirname;
@@ -103,6 +104,10 @@ const server = http.createServer((req, res) => {
 
   if (pathname === '/api/track-visit') {
     return runServerless(trackVisitApi, req, res);
+  }
+
+  if (pathname === '/api/admin-login') {
+    return runServerless(adminLoginApi, req, res);
   }
 
   // ==========================================

@@ -75,8 +75,7 @@ module.exports = async (req, res) => {
             success: true,
             storage: 'supabase',
             message: 'Registration saved to Supabase',
-            pass_id: payload.pass_id,
-            ip: clientIp
+            pass_id: payload.pass_id
           });
         }
         console.warn('Supabase insert warning, falling back to local:', error.message);
