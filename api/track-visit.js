@@ -49,7 +49,6 @@ module.exports = async (req, res) => {
       page: page,
       user_agent: userAgent,
       referrer: referrer,
-      screen_resolution: screen,
       created_at: timestamp
     };
 
@@ -58,6 +57,7 @@ module.exports = async (req, res) => {
 
     // 5. Store in Supabase 'site_visits' table if configured
     let savedToSupabase = false;
+    let supabaseError = null;
     if (isConfigured && supabase) {
       try {
         const { error } = await supabase
@@ -67,9 +67,21 @@ module.exports = async (req, res) => {
         if (!error) {
           savedToSupabase = true;
         } else {
+          supabaseError = error.message;
           console.warn('Supabase site_visits insert note:', error.message);
+
+          // Graceful fallback: try minimal insert with just ip_address & created_at
+          try {
+            const fallback = await supabase
+              .from('site_visits')
+              .insert([{ ip_address: ip, created_at: timestamp }]);
+            if (!fallback.error) {
+              savedToSupabase = true;
+            }
+          } catch (fbErr) {}
         }
       } catch (err) {
+        supabaseError = err.message;
         console.warn('Supabase site_visits exception:', err.message);
       }
     }
