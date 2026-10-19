@@ -29,6 +29,12 @@ module.exports = async (req, res) => {
 
     const passId = record.pass_id || ('DN-' + Math.random().toString(36).substring(2, 8).toUpperCase());
 
+    // Extract Client IP address
+    const forwarded = req.headers['x-forwarded-for'];
+    const clientIp = forwarded
+      ? forwarded.split(',')[0].trim()
+      : req.headers['x-real-ip'] || req.socket?.remoteAddress || req.connection?.remoteAddress || 'unknown';
+
     const payload = {
       pass_id: passId,
       full_name: record.full_name,
@@ -37,23 +43,40 @@ module.exports = async (req, res) => {
       email: record.email || '',
       pass_url: record.pass_url || '',
       status: 'Active',
+      ip_address: clientIp,
       created_at: record.created_at || new Date().toISOString()
     };
+
+    // Log to Vercel Runtime Console
+    console.log(`[PASS_REGISTERED] Pass: ${payload.pass_id} | Name: ${payload.full_name} | IP: ${clientIp} | Time: ${payload.created_at}`);
 
     // 1. Try saving to Supabase if configured
     if (isConfigured && supabase) {
       try {
-        const { data, error } = await supabase
+        let { data, error } = await supabase
           .from('dandiya_registrations')
           .insert([payload])
           .select();
+
+        // If table doesn't have ip_address column yet, retry gracefully without it
+        if (error && error.message && error.message.includes('ip_address')) {
+          const payloadNoIp = { ...payload };
+          delete payloadNoIp.ip_address;
+          const retry = await supabase
+            .from('dandiya_registrations')
+            .insert([payloadNoIp])
+            .select();
+          data = retry.data;
+          error = retry.error;
+        }
 
         if (!error) {
           return res.status(200).json({
             success: true,
             storage: 'supabase',
             message: 'Registration saved to Supabase',
-            pass_id: payload.pass_id
+            pass_id: payload.pass_id,
+            ip: clientIp
           });
         }
         console.warn('Supabase insert warning, falling back to local:', error.message);

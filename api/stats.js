@@ -1,6 +1,6 @@
 /**
  * Vercel Serverless Function: GET /api/stats
- * Returns live count of registrations
+ * Returns live count of pass registrations
  */
 
 const { supabase, isConfigured, LOCAL_DB } = require('./supabase-server');
@@ -19,6 +19,8 @@ module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 's-maxage=2, stale-while-revalidate=15');
 
   try {
+    let regCount = 0;
+
     if (isConfigured && supabase) {
       try {
         const countPromise = supabase
@@ -30,21 +32,20 @@ module.exports = async (req, res) => {
         );
 
         const { count, error } = await Promise.race([countPromise, timeoutPromise]);
-
-        if (!error && count !== null) {
-          return res.status(200).json({ count });
-        }
+        if (!error && count !== null) regCount = count;
       } catch (e) {
         console.warn('Supabase count error:', e.message);
       }
     }
 
-    if (fs.existsSync(LOCAL_DB)) {
-      const list = JSON.parse(fs.readFileSync(LOCAL_DB, 'utf-8'));
-      return res.status(200).json({ count: list.length });
+    if (regCount === 0 && fs.existsSync(LOCAL_DB)) {
+      try {
+        const list = JSON.parse(fs.readFileSync(LOCAL_DB, 'utf-8'));
+        regCount = list.length;
+      } catch (e) {}
     }
 
-    return res.status(200).json({ count: 0 });
+    return res.status(200).json({ count: regCount });
   } catch (err) {
     return res.status(500).json({ count: 0, error: err.message });
   }

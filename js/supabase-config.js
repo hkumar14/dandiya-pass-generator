@@ -197,6 +197,30 @@ CREATE POLICY "Enable public read for pass verification"
 ON dandiya_registrations 
 FOR SELECT 
 USING (true);
+
+-- ==========================================
+-- Site Visitor IP & Timestamp Tracking Table
+-- ==========================================
+CREATE TABLE IF NOT EXISTS site_visits (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    ip_address VARCHAR(100) NOT NULL,
+    page VARCHAR(255) DEFAULT '/',
+    user_agent TEXT,
+    referrer TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+ALTER TABLE site_visits ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Enable public anonymous insert for site_visits" 
+ON site_visits 
+FOR INSERT 
+WITH CHECK (true);
+
+CREATE POLICY "Enable read for site_visits" 
+ON site_visits 
+FOR SELECT 
+USING (true);
 `;
   }
 }
