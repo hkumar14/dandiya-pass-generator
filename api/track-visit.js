@@ -97,12 +97,7 @@ module.exports = async (req, res) => {
       fs.writeFileSync(VISITS_FILE, JSON.stringify(list, null, 2));
     } catch (e) {}
 
-    return res.status(200).json({
-      success: true,
-      ip: ip,
-      timestamp: timestamp,
-      supabase: savedToSupabase
-    });
+    return res.status(200).json({ ok: true });
   } catch (err) {
     console.error('Track visit error:', err);
     return res.status(500).json({ error: 'Internal Server Error', message: err.message });

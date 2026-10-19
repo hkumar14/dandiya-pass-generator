@@ -210,17 +210,23 @@ CREATE TABLE IF NOT EXISTS site_visits (
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
+-- One-way write: Allow public to insert visit logs, but block all public reading
 ALTER TABLE site_visits ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Enable public anonymous insert for site_visits" 
+DROP POLICY IF EXISTS "Enable public anonymous insert for site_visits" ON site_visits;
+DROP POLICY IF EXISTS "Enable read for site_visits" ON site_visits;
+DROP POLICY IF EXISTS "Allow public insert to site_visits" ON site_visits;
+DROP POLICY IF EXISTS "Allow public select to site_visits" ON site_visits;
+DROP POLICY IF EXISTS "site_visits_insert_only" ON site_visits;
+
+CREATE POLICY "site_visits_insert_only" 
 ON site_visits 
 FOR INSERT 
+TO public 
 WITH CHECK (true);
 
-CREATE POLICY "Enable read for site_visits" 
-ON site_visits 
-FOR SELECT 
-USING (true);
+-- NOTE: No SELECT policy is created for public/anon!
+-- Only the project owner inside Supabase Dashboard can view the data.
 `;
   }
 }
